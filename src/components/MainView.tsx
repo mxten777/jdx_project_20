@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import { memo } from 'react';
 
 interface MainViewProps {
   onNavigateToGenerate: () => void;

@@ -104,13 +104,13 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
       }));
 
       // 성공 메시지 표시
-      const methodNames = {
-        random: '완전 랜덤',
-        balanced: '균형 생성',
-        statistics: '통계 기반',
-        custom: '커스텀 생성'
-      };
-      options?.onSuccess?.(`${methodNames[method] || '번호'} 생성이 완료되었습니다!`);
+          const methodNames: Partial<Record<GenerationMethod, string>> = {
+            random: '완전 랜덤',
+            balanced: '균형 생성',
+            statistics: '통계 기반',
+            custom: '커스텀 생성'
+          };
+          options?.onSuccess?.(`${methodNames[method] || '번호'} 생성이 완료되었습니다!`);
     } catch (error) {
       console.error('번호 생성 중 오류:', error);
       const errorMessage = error instanceof Error ? error.message : '번호 생성 중 오류가 발생했습니다.';
