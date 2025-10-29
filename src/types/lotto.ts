@@ -112,3 +112,36 @@ export interface ToastMessage {
   message?: string;
   duration?: number;
 }
+
+// 에러 처리 관련 타입
+export interface AppError {
+  code: string;
+  message: string;
+  details?: unknown;
+  timestamp: Date;
+}
+
+export type ErrorHandler = (error: AppError) => void;
+
+// API 응답 타입
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: AppError;
+  timestamp: Date;
+}
+
+// 유효성 검사 타입
+export interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+// 설정 타입
+export interface AppSettings {
+  theme: Theme;
+  language: 'ko' | 'en';
+  notifications: boolean;
+  autoSave: boolean;
+  defaultGenerationMethod: GenerationMethod;
+}
