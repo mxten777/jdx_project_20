@@ -86,33 +86,35 @@ const Dashboard: React.FC<DashboardProps> = ({ results }) => {
   }
 
   return (
-    <div className="card-premium p-6 space-y-8 animate-number-appear">
+    <div className="card-premium p-4 sm:p-6 space-y-6 sm:space-y-8 animate-number-appear">
   {/* 최신 당첨 번호 및 내 번호 자동 확인 */}
-      <div className="mb-8">
-        <h3 className="text-lg font-bold mb-2 text-gradient flex items-center gap-2">
+      <div className="mb-6 sm:mb-8">
+        <h3 className="text-base sm:text-lg font-bold mb-2 text-gradient flex items-center gap-2">
           🏆 최신 당첨 결과 자동 확인
           {checking && <span className="text-xs text-gray-400">(조회중...)</span>}
         </h3>
         {latestDraw ? (
-          <div className="bg-white/10 rounded-xl p-4 mb-2">
-            <div className="mb-2 text-sm text-white/80">
-              <span className="font-semibold">{latestDraw.drwNo}회 ({latestDraw.drwNoDate})</span> 당첨번호:
-              <span className="ml-2 font-mono text-lg text-gold-400">
-                {[latestDraw.drwtNo1, latestDraw.drwtNo2, latestDraw.drwtNo3, latestDraw.drwtNo4, latestDraw.drwtNo5, latestDraw.drwtNo6].join(', ')}
-              </span>
-              <span className="ml-2 text-sm text-blue-400">+{latestDraw.bnusNo}</span>
+          <div className="bg-white/10 rounded-xl p-3 sm:p-4 mb-2">
+            <div className="mb-2 text-xs sm:text-sm text-white/80">
+              <div className="font-semibold">{latestDraw.drwNo}회 ({latestDraw.drwNoDate})</div>
+              <div className="mt-1">
+                당첨번호: <span className="font-mono text-sm sm:text-lg text-gold-400">
+                  {[latestDraw.drwtNo1, latestDraw.drwtNo2, latestDraw.drwtNo3, latestDraw.drwtNo4, latestDraw.drwtNo5, latestDraw.drwtNo6].join(', ')}
+                </span>
+                <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-blue-400">+{latestDraw.bnusNo}</span>
+              </div>
             </div>
             {results.length === 0 ? (
               <div className="text-xs text-white/60">저장된 번호가 없습니다.</div>
             ) : (
-              <div className="space-y-1 max-h-32 overflow-y-auto">
+              <div className="space-y-1 max-h-24 sm:max-h-32 overflow-y-auto">
                 {results.map((r, i) => {
                   const res = matchResults[i];
                   const rank = res ? getRank(res.match, res.bonus) : null;
                   return (
-                    <div key={r.id} className="flex items-center gap-2 text-xs bg-white/5 rounded p-2">
-                      <span className="font-mono text-white/80">{r.numbers.join(', ')}</span>
-                      <span className="ml-auto font-bold text-gold-400">
+                    <div key={r.id} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs bg-white/5 rounded p-2">
+                      <span className="font-mono text-white/80 text-xs">{r.numbers.join(', ')}</span>
+                      <span className="font-bold text-gold-400 text-xs">
                         {rank ? `${rank} (${res.match}개${res.bonus ? '+보너스' : ''})` : `${res?.match ?? 0}개 일치`}
                       </span>
                     </div>
@@ -127,17 +129,17 @@ const Dashboard: React.FC<DashboardProps> = ({ results }) => {
   </div>
   {/* 수익률 시뮬레이션 */}
   <YieldWidget matchResults={matchResults} draw={latestDraw} />
-      <h2 className="text-2xl font-bold text-gradient mb-4 text-center">📊 인터랙티브 통계 대시보드</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <h2 className="text-lg sm:text-2xl font-bold text-gradient mb-4 text-center">📊 인터랙티브 통계 대시보드</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         <div>
-          <h3 className="font-semibold mb-2">번호 분포 차트</h3>
-          <div className="h-64 bg-white/10 rounded-xl p-4">
+          <h3 className="font-semibold mb-2 text-sm sm:text-base">번호 분포 차트</h3>
+          <div className="h-48 sm:h-64 bg-white/10 rounded-xl p-3 sm:p-4">
             <Bar data={barData} options={barOptions} />
           </div>
         </div>
         <div>
-          <h3 className="font-semibold mb-2">홀짝 비율</h3>
-          <div className="h-64 flex items-center justify-center bg-white/10 rounded-xl p-4">
+          <h3 className="font-semibold mb-2 text-sm sm:text-base">홀짝 비율</h3>
+          <div className="h-48 sm:h-64 flex items-center justify-center bg-white/10 rounded-xl p-3 sm:p-4">
             <Doughnut data={doughnutData} />
           </div>
         </div>

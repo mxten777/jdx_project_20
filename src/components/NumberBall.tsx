@@ -40,8 +40,8 @@ const NumberBall: React.FC<NumberBallProps> = ({
         number-ball
         ${colorClass}
         ${getStatusClass()}
-        ${isAnimating ? 'animate-number-flip animate-float animate-glow-pulse' : ''}
-        ${onClick ? 'cursor-pointer hover:scale-125 active:scale-95 transition-transform duration-200' : ''}
+        ${isAnimating ? 'animate-number-flip' : ''}
+        ${onClick ? 'cursor-pointer hover:scale-110 sm:hover:scale-125 active:scale-95 transition-transform duration-200' : ''}
         ${className}
         select-none
         shadow-glow
@@ -58,12 +58,12 @@ const NumberBall: React.FC<NumberBallProps> = ({
       }}
       aria-label={`로또 번호 ${number}${isFixed ? ' (고정됨)' : ''}${isExcluded ? ' (제외됨)' : ''}`}
     >
-      <span className="font-bold text-lg will-change-transform">
+      <span className="font-bold text-sm sm:text-lg will-change-transform">
         {number}
       </span>
       
       {(isFixed || isExcluded) && (
-        <div className="absolute -top-1 -right-1 text-xs">
+        <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 text-xs">
           {getStatusIcon()}
         </div>
       )}

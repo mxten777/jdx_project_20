@@ -75,14 +75,14 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
 
 
   return (
-  <div className="card p-6 space-y-6 animate-number-appear">
+  <div className="card p-4 sm:p-6 space-y-4 sm:space-y-6 animate-number-appear">
       <div className="flex items-center justify-between animate-float">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200">
           생성 옵션
         </h3>
         <button
           onClick={clearAll}
-          className="text-sm text-red-600 hover:text-red-700 dark:text-red-400 
+          className="text-xs sm:text-sm text-red-600 hover:text-red-700 dark:text-red-400 
                    dark:hover:text-red-300 transition-colors duration-200 haptic-light animate-glow-pulse"
         >
           전체 초기화
@@ -91,10 +91,10 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
 
       {/* 번호 선택 모드 */}
       <div className="space-y-4">
-        <div className="flex gap-2 animate-float">
+        <div className="grid grid-cols-1 sm:flex gap-2 animate-float">
           <button
             onClick={() => setMode(mode === 'fixed' ? 'none' : 'fixed')}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 haptic-light animate-glow-pulse ${
+            className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 haptic-light animate-glow-pulse ${
               mode === 'fixed'
                 ? 'bg-gold-500 text-white shadow-md'
                 : 'bg-gray-100 dark:bg-navy-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-navy-600'
@@ -104,7 +104,7 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
           </button>
           <button
             onClick={() => setMode(mode === 'excluded' ? 'none' : 'excluded')}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 haptic-light animate-glow-pulse ${
+            className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 haptic-light animate-glow-pulse ${
               mode === 'excluded'
                 ? 'bg-red-500 text-white shadow-md'
                 : 'bg-gray-100 dark:bg-navy-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-navy-600'
@@ -115,14 +115,14 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
         </div>
 
         {mode !== 'none' && (
-          <div className="bg-gray-50 dark:bg-navy-900 rounded-xl p-4 animate-number-appear">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          <div className="bg-gray-50 dark:bg-navy-900 rounded-xl p-3 sm:p-4 animate-number-appear">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 sm:mb-3">
               {mode === 'fixed' 
                 ? '고정할 번호를 선택하세요 (최대 6개)' 
                 : '제외할 번호를 선택하세요'
               }
             </p>
-            <div className="grid grid-cols-9 gap-2">
+            <div className="grid grid-cols-6 sm:grid-cols-9 gap-1 sm:gap-2">
               {allNumbers.map(number => (
                 <NumberBall
                   key={number}
@@ -130,7 +130,7 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
                   isFixed={options.fixedNumbers.includes(number)}
                   isExcluded={options.excludedNumbers.includes(number)}
                   onClick={handleNumberClick}
-                  className="text-xs w-8 h-8"
+                  className="text-xs w-6 h-6 sm:w-8 sm:h-8"
                 />
               ))}
             </div>
@@ -141,77 +141,77 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
       {/* 기본 옵션들 */}
   <div className="space-y-3 animate-float">
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
             📊 통계 기반 생성
             <span className="text-xs text-gray-500">(빈출 번호 우선)</span>
           </label>
           <button
             onClick={() => handleToggle('useStatistics')}
-            className={`w-12 h-6 rounded-full transition-all duration-200 haptic-light animate-glow-pulse ${
+            className={`w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-all duration-200 haptic-light animate-glow-pulse ${
               options.useStatistics 
                 ? 'bg-primary-500' 
                 : 'bg-gray-300 dark:bg-gray-600'
             }`}
           >
-            <div className={`w-5 h-5 bg-white rounded-full transition-all duration-200 ${
-              options.useStatistics ? 'translate-x-6' : 'translate-x-0.5'
+            <div className={`w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all duration-200 ${
+              options.useStatistics ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0.5'
             }`} />
           </button>
         </div>
 
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
             🔄 연속 번호 방지
             <span className="text-xs text-gray-500">(1,2,3 등)</span>
           </label>
           <button
             onClick={() => handleToggle('avoidConsecutive')}
-            className={`w-12 h-6 rounded-full transition-all duration-200 haptic-light animate-glow-pulse ${
+            className={`w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-all duration-200 haptic-light animate-glow-pulse ${
               options.avoidConsecutive 
                 ? 'bg-primary-500' 
                 : 'bg-gray-300 dark:bg-gray-600'
             }`}
           >
-            <div className={`w-5 h-5 bg-white rounded-full transition-all duration-200 ${
-              options.avoidConsecutive ? 'translate-x-6' : 'translate-x-0.5'
+            <div className={`w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all duration-200 ${
+              options.avoidConsecutive ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0.5'
             }`} />
           </button>
         </div>
 
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
             🎯 같은 끝자리 방지
             <span className="text-xs text-gray-500">(1,11,21 등)</span>
           </label>
           <button
             onClick={() => handleToggle('avoidSameEnding')}
-            className={`w-12 h-6 rounded-full transition-all duration-200 haptic-light animate-glow-pulse ${
+            className={`w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-all duration-200 haptic-light animate-glow-pulse ${
               options.avoidSameEnding 
                 ? 'bg-primary-500' 
                 : 'bg-gray-300 dark:bg-gray-600'
             }`}
           >
-            <div className={`w-5 h-5 bg-white rounded-full transition-all duration-200 ${
-              options.avoidSameEnding ? 'translate-x-6' : 'translate-x-0.5'
+            <div className={`w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all duration-200 ${
+              options.avoidSameEnding ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0.5'
             }`} />
           </button>
         </div>
 
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
             ⚖️ 홀짝 균형
             <span className="text-xs text-gray-500">(3:3 비율 유지)</span>
           </label>
           <button
             onClick={() => handleToggle('oddEvenBalance')}
-            className={`w-12 h-6 rounded-full transition-all duration-200 haptic-light animate-glow-pulse ${
+            className={`w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-all duration-200 haptic-light animate-glow-pulse ${
               options.oddEvenBalance 
                 ? 'bg-primary-500' 
                 : 'bg-gray-300 dark:bg-gray-600'
             }`}
           >
-            <div className={`w-5 h-5 bg-white rounded-full transition-all duration-200 ${
-              options.oddEvenBalance ? 'translate-x-6' : 'translate-x-0.5'
+            <div className={`w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all duration-200 ${
+              options.oddEvenBalance ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0.5'
             }`} />
           </button>
         </div>
@@ -221,36 +221,36 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
       <div className="animate-float">
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="w-full text-left text-sm font-medium text-primary-600 dark:text-primary-400 
+          className="w-full text-left text-xs sm:text-sm font-medium text-primary-600 dark:text-primary-400 
                    hover:text-primary-700 dark:hover:text-primary-300 transition-colors duration-200 haptic-light animate-glow-pulse"
         >
           {showAdvanced ? '고급 옵션 숨기기 ▲' : '고급 옵션 보기 ▼'}
         </button>
 
         {showAdvanced && (
-          <div className="mt-4 p-4 bg-gray-50 dark:bg-navy-900 rounded-xl space-y-4 animate-slide-up">
+          <div className="mt-4 p-3 sm:p-4 bg-gray-50 dark:bg-navy-900 rounded-xl space-y-4 animate-slide-up">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 🎲 합계 범위 설정
               </label>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <input
                   type="number"
                   min="21"
                   max="255"
                   value={options.sumRange?.min || 21}
                   onChange={(e) => handleSumRangeChange('min', e.target.value)}
-                  className="input-field text-sm w-20"
+                  className="input-field text-xs sm:text-sm w-16 sm:w-20"
                   placeholder="최소"
                 />
-                <span className="text-gray-500">~</span>
+                <span className="text-gray-500 text-xs sm:text-sm">~</span>
                 <input
                   type="number"
                   min="21"
                   max="255"
                   value={options.sumRange?.max || 255}
                   onChange={(e) => handleSumRangeChange('max', e.target.value)}
-                  className="input-field text-sm w-20"
+                  className="input-field text-xs sm:text-sm w-16 sm:w-20"
                   placeholder="최대"
                 />
               </div>

@@ -1,382 +1,112 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
-    background-size: 400% 400%;
-    animation: aurora 20s ease infinite;
-    font-family: 'Pretendard', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    min-height: 100vh;
-    color: white;
-    position: relative;
-    overflow-x: hidden;
-  }
-  
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: -1;
-  }
-  
-  html {
-    scroll-behavior: smooth;
-  }
-}
-
-@keyframes aurora {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-@layer components {
-  /* 🎭 Glassmorphism 버튼 */
-  .btn-primary {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 600;
-    padding: 12px 24px;
-    border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  .btn-primary:hover::before {
-    left: 100%;
-  }
-  
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
-  }
-  
-  .btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 600;
-    padding: 12px 24px;
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  }
-  
-  .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
-  }
-  
-  .btn-gold {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.8) 0%, rgba(217, 119, 6, 0.8) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 600;
-    padding: 12px 24px;
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.37);
-  }
-  
-  .btn-gold:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(245, 158, 11, 0.5);
-  }
-  
-  /* 🌟 Glassmorphism 카드 */
-  .card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    transition: all 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 48px rgba(31, 38, 135, 0.5);
-  }
-  
-  .card-premium {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border-radius: 32px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 20px 60px rgba(31, 38, 135, 0.4);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .card-premium::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  }
-  
-  /* 🎲 프리미엄 로또볼 스타일 */
-  .number-ball {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-    color: white;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-  
-  .number-ball::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transform: rotate(45deg);
-    transition: all 0.5s ease;
-  }
-  
-  .number-ball:hover {
-    transform: scale(1.1) rotateY(15deg);
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
-  }
-  
-  .number-ball:hover::before {
-    animation: glassShine 0.8s ease-out;
-  }
-  
-  .number-ball-1-10 {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.9) 0%, rgba(245, 158, 11, 0.9) 100%);
-    box-shadow: 0 8px 32px rgba(251, 191, 36, 0.4);
-  }
-  
-  .number-ball-11-20 {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%);
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
-  }
-  
-  .number-ball-21-30 {
-    background: linear-gradient(135deg, rgba(248, 113, 113, 0.9) 0%, rgba(239, 68, 68, 0.9) 100%);
-    box-shadow: 0 8px 32px rgba(248, 113, 113, 0.4);
-  }
-  
-  .number-ball-31-40 {
-    background: linear-gradient(135deg, rgba(156, 163, 175, 0.9) 0%, rgba(107, 114, 128, 0.9) 100%);
-    box-shadow: 0 8px 32px rgba(156, 163, 175, 0.4);
-  }
-  
-  .number-ball-41-45 {
-    background: linear-gradient(135deg, rgba(52, 211, 153, 0.9) 0%, rgba(16, 185, 129, 0.9) 100%);
-    box-shadow: 0 8px 32px rgba(52, 211, 153, 0.4);
-  }
-  
-  /* 🎯 Glassmorphism 입력 필드 */
-  .input-field {
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  }
-  
-  .input-field:focus {
-    outline: none;
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-  }
-  
-  .input-field::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-  }
-}
-
-@layer utilities {
-  .text-gradient {
-    background: linear-gradient(to right, #0284c7, #7c3aed);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .text-gold-gradient {
-    background: linear-gradient(to right, #f59e0b, #d97706);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .animate-number-appear {
-    animation: numberAppear 0.8s ease-out forwards;
-  }
-
-  /* 📱 모바일 터치 최적화 */
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
-    position: relative;
-  }
-
-  .touch-target::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 44px;
-    min-height: 44px;
-    z-index: -1;
-  }
-
-  /* 스와이프 제스처 지원 */
-  .swipeable {
-    touch-action: pan-x;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-  }
-
-  /* 모바일 스크롤 최적화 */
-  .smooth-scroll {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-  }
-
-  /* 모바일 전용 레이아웃 */
-  .mobile-container {
-    @media (max-width: 768px) {
-      padding: 1rem;
-      gap: 1rem;
-    }
-  }
-
-  .mobile-header {
-    @media (max-width: 768px) {
-      padding: 1.5rem 1rem;
-      font-size: 2.5rem;
-    }
-  }
-
-  .mobile-grid {
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-    }
-  }
-
-  .mobile-stack {
-    @media (max-width: 768px) {
-      flex-direction: column;
-      gap: 1rem;
-    }
-  }
-
-  /* 햅틱 피드백 시뮬레이션 */
-  .haptic-light {
-    transition: transform 0.1s ease;
-  }
-
-  .haptic-light:active {
-    transform: scale(0.95);
-  }
-
-  .haptic-medium {
-    transition: transform 0.15s ease;
-  }
-
-  .haptic-medium:active {
-    transform: scale(0.9);
-  }
-
-  /* 모바일 애니메이션 최적화 */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-float,
-    .animate-glow-pulse,
-    .animate-shimmer,
-    .animate-hologram {
-      animation: none;
-    }
-  }
-
-  /* PWA 지원 스타일 */
-  @media (display-mode: standalone) {
-    body {
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-  }
-}
-
-@keyframes numberAppear {
-  0% { 
-    opacity: 0; 
-    transform: scale(0.3) rotateY(180deg); 
-  }
-  50% { 
-    opacity: 0.7; 
-    transform: scale(1.1) rotateY(90deg); 
-  }
-  100% { 
-    opacity: 1; 
-    transform: scale(1) rotateY(0deg); 
-  }
-}
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    
+    <!-- 📱 모바일 최적화 메타 태그 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- PWA 메타 태그 -->
+    <meta name="application-name" content="프리미엄 로또 생성기" />
+    <meta name="apple-mobile-web-app-title" content="프리미엄 로또 생성기" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="msapplication-TileColor" content="#667eea" />
+    <meta name="msapplication-navbutton-color" content="#667eea" />
+    
+    <!-- SEO & Social -->
+    <meta name="description" content="프리미엄 로또 번호 생성기 - AI 기반 스마트 번호 생성으로 당신의 행운을 찾아보세요" />
+    <meta name="keywords" content="로또, 번호생성기, 로또번호, 행운번호, 로또추천, 모바일로또, PWA" />
+    <meta property="og:title" content="🎲 프리미엄 로또 번호 생성기" />
+    <meta property="og:description" content="AI 기반 스마트 번호 생성으로 당신의 행운을 찾아보세요" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.png" />
+    
+    <!-- 터치 아이콘 -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/manifest.json" />
+        <title>🎲 프리미엄 로또 번호 생성기</title>
+    <meta name="description" content="AI 기반 스마트 로또 번호 생성기. 다양한 생성 방식과 고급 옵션으로 당신만의 행운 번호를 만들어보세요!">
+    <meta name="keywords" content="로또, 번호생성기, 로또번호, 당첨번호, 랜덤번호, 행운번호">
+    <meta property="og:title" content="🎲 프리미엄 로또 번호 생성기">
+    <meta property="og:description" content="AI 기반 스마트 로또 번호 생성기로 당신의 행운을 찾아보세요!">
+    <meta property="og:type" content="website">
+    <style>
+      /* 로딩 애니메이션 */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #f1f5f9, #e0f2fe);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: 'Pretendard', system-ui, sans-serif;
+      }
+      .loading-text {
+        font-size: 2rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #0284c7, #7c3aed);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+      }
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid #e5e7eb;
+        border-top: 4px solid #0284c7;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .dice-animation {
+        font-size: 3rem;
+        animation: bounce 1.5s ease-in-out infinite;
+      }
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-20px); }
+        60% { transform: translateY(-10px); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading" class="loading-screen">
+      <div class="dice-animation">🎲</div>
+      <div class="loading-text">프리미엄 로또 생성기</div>
+      <div class="loading-spinner"></div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // 로딩 화면 제거
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loading = document.getElementById('loading');
+          if (loading) {
+            loading.style.opacity = '0';
+            loading.style.transition = 'opacity 0.5s ease-out';
+            setTimeout(() => {
+              loading.remove();
+            }, 500);
+          }
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>
