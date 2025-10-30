@@ -23,7 +23,8 @@ const App = memo(() => {
     handleGenerate,
     handleOptionsChange,
     toggleDarkMode,
-    setView
+    setView,
+    setGenerateCount
   } = useLottoApp({
     onError: showError,
     onSuccess: showSuccess
@@ -53,6 +54,8 @@ const App = memo(() => {
             onOptionsChange={handleOptionsChange}
             onGenerate={handleGenerate}
             onNavigateBack={handleNavigateBack}
+            appState={appState}
+            setGenerateCount={setGenerateCount}
           />
         );
       case 'history':
@@ -73,16 +76,13 @@ const App = memo(() => {
     }
   }, [
     currentView,
-    appState.options,
-    appState.currentNumbers,
-    appState.isGenerating,
-    appState.history.results,
-    appState.statistics,
+    appState,
     handleNavigateToGenerate,
     handleNavigateToHistory,
     handleNavigateBack,
     handleOptionsChange,
-    handleGenerate
+    handleGenerate,
+    setGenerateCount
   ]);
 
   return (

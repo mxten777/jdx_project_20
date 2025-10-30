@@ -3,6 +3,8 @@ import ResultDisplay from './ResultDisplay';
 import GeneratorOptions from './GeneratorOptions';
 import type { GenerationMethod, GenerationOptions } from '../types/lotto';
 
+import type { AppState } from '../types/lotto';
+
 interface GenerateViewProps {
   options: GenerationOptions;
   currentNumbers: number[][];
@@ -10,6 +12,8 @@ interface GenerateViewProps {
   onOptionsChange: (options: GenerationOptions) => void;
   onGenerate: (method: GenerationMethod) => void;
   onNavigateBack: () => void;
+  appState: AppState;
+  setGenerateCount: (count: number) => void;
 }
 
 export const GenerateView: React.FC<GenerateViewProps> = memo(({
@@ -18,13 +22,19 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
   isGenerating,
   onOptionsChange,
   onGenerate,
-  onNavigateBack
+  onNavigateBack,
+  appState,
+  setGenerateCount
 }) => {
   // 메모이제이션된 핸들러들
   const handleRandomGenerate = useCallback(() => onGenerate('random'), [onGenerate]);
   const handleBalancedGenerate = useCallback(() => onGenerate('balanced'), [onGenerate]);
   const handleStatisticsGenerate = useCallback(() => onGenerate('statistics'), [onGenerate]);
   const handleCustomGenerate = useCallback(() => onGenerate('custom'), [onGenerate]);
+
+  // 조합 개수 선택 버튼
+  const counts = [1, 3, 5, 10];
+
   return (
     <div className="min-h-screen premium-bg p-4">
       <div className="max-w-4xl mx-auto">
@@ -35,7 +45,21 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
         >
           <span>←</span> 메인으로
         </button>
-        
+
+        {/* 조합 개수 선택 */}
+        <div className="flex gap-2 mb-4 justify-center">
+          {counts.map((count) => (
+            <button
+              key={count}
+              className={`btn-premium-main text-xs px-3 py-1 rounded-full ${appState.generateCount === count ? 'ring-2 ring-gold-400' : ''}`}
+              onClick={() => setGenerateCount(count)}
+              disabled={isGenerating}
+            >
+              {count}개 생성
+            </button>
+          ))}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="glass-card p-6">
             <GeneratorOptions options={options} onOptionsChange={onOptionsChange} />

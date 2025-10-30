@@ -38,6 +38,9 @@ const NumberBall: React.FC<NumberBallProps> = ({
       className={`
         relative
         number-ball
+        w-9 h-9 sm:w-11 sm:h-11
+        flex items-center justify-center
+        font-mono
         ${colorClass}
         ${getStatusClass()}
         ${isAnimating ? 'animate-number-flip' : ''}
@@ -58,7 +61,7 @@ const NumberBall: React.FC<NumberBallProps> = ({
       }}
       aria-label={`로또 번호 ${number}${isFixed ? ' (고정됨)' : ''}${isExcluded ? ' (제외됨)' : ''}`}
     >
-      <span className="font-bold text-sm sm:text-lg will-change-transform">
+      <span className="font-bold text-base sm:text-lg leading-none font-mono will-change-transform w-full text-center">
         {number}
       </span>
       

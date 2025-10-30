@@ -28,7 +28,7 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
     currentNumbers: [],
     isGenerating: false,
     history: { results: [], favorites: [] },
-    generateCount: 1,
+    generateCount: 1, // 기본값 1개
     options: {
       fixedNumbers: [],
       excludedNumbers: [],
@@ -62,28 +62,28 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
   // 번호 생성 함수 (메모이제이션 + 재시도 로직)
   const handleGenerate = useCallback(async (method: GenerationMethod) => {
     setAppState(prev => ({ ...prev, isGenerating: true }));
-    
     try {
       const numbers = await retry(async () => {
-        let result: number[][];
-        
-        switch (method) {
-          case 'random':
-            result = [generateRandomNumbers()];
-            break;
-          case 'balanced':
-            result = [generateBalancedNumbers(appState.options)];
-            break;
-          case 'statistics':
-            result = [generateStatisticalNumbers(appState.statistics || defaultStats, appState.options)];
-            break;
-          case 'custom':
-            result = [generateCustomNumbers(appState.options)];
-            break;
-          default:
-            result = [generateRandomNumbers()];
+  const result: number[][] = [];
+        const count = appState.generateCount || 1;
+        for (let i = 0; i < count; i++) {
+          switch (method) {
+            case 'random':
+              result.push(generateRandomNumbers());
+              break;
+            case 'balanced':
+              result.push(generateBalancedNumbers(appState.options));
+              break;
+            case 'statistics':
+              result.push(generateStatisticalNumbers(appState.statistics || defaultStats, appState.options));
+              break;
+            case 'custom':
+              result.push(generateCustomNumbers(appState.options));
+              break;
+            default:
+              result.push(generateRandomNumbers());
+          }
         }
-
         return result;
       }, {
         maxAttempts: 3,
@@ -91,9 +91,7 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
         backoffMultiplier: 2,
         maxDelay: 2000
       });
-
       const results = numbers.map(numSet => createLottoResult(numSet, method));
-      
       setAppState(prev => ({
         ...prev,
         currentNumbers: numbers,
@@ -102,15 +100,14 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
           results: [...prev.history.results, ...results]
         }
       }));
-
       // 성공 메시지 표시
-          const methodNames: Partial<Record<GenerationMethod, string>> = {
-            random: '완전 랜덤',
-            balanced: '균형 생성',
-            statistics: '통계 기반',
-            custom: '커스텀 생성'
-          };
-          options?.onSuccess?.(`${methodNames[method] || '번호'} 생성이 완료되었습니다!`);
+      const methodNames: Partial<Record<GenerationMethod, string>> = {
+        random: '완전 랜덤',
+        balanced: '균형 생성',
+        statistics: '통계 기반',
+        custom: '커스텀 생성'
+      };
+      options?.onSuccess?.(`${methodNames[method] || '번호'} ${appState.generateCount}개 생성 완료!`);
     } catch (error) {
       console.error('번호 생성 중 오류:', error);
       const errorMessage = error instanceof Error ? error.message : '번호 생성 중 오류가 발생했습니다.';
@@ -118,7 +115,11 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
     } finally {
       setAppState(prev => ({ ...prev, isGenerating: false }));
     }
-  }, [appState.options, appState.statistics, options]);
+  }, [appState.options, appState.statistics, appState.generateCount, options]);
+  // 조합 개수 변경 핸들러
+  const setGenerateCount = useCallback((count: number) => {
+    setAppState(prev => ({ ...prev, generateCount: count }));
+  }, []);
 
   // 옵션 변경 핸들러 (메모이제이션)
   const handleOptionsChange = useCallback((newOptions: GenerationOptions) => {
@@ -143,7 +144,8 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
     handleGenerate,
     handleOptionsChange,
     toggleDarkMode,
-    setView
+    setView,
+    setGenerateCount
   }), [
     appState,
     showUpdateBanner,
@@ -151,7 +153,8 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
     handleGenerate,
     handleOptionsChange,
     toggleDarkMode,
-    setView
+    setView,
+    setGenerateCount
   ]);
 
   return returnValue;
