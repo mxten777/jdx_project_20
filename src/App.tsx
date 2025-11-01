@@ -86,7 +86,7 @@ const App = memo(() => {
   ]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen hero-gradient">
       <UpdateBanner 
         isVisible={showUpdateBanner}
         onReload={handleReload}

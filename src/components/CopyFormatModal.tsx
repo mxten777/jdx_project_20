@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Modal from './Modal';
 
 interface CopyFormatModalProps {
   numberSets: number[][];
@@ -15,6 +16,11 @@ const CopyFormatModal: React.FC<CopyFormatModalProps> = ({
 }) => {
   const [selectedFormat, setSelectedFormat] = useState<string>('premium');
   const [copied, setCopied] = useState(false);
+  const [showManualCopy, setShowManualCopy] = useState(false);
+  const [manualCopyText, setManualCopyText] = useState('');
+  const [copyEvent, setCopyEvent] = useState<string>('');
+
+  console.log('CopyFormatModal render - isOpen:', isOpen);
 
   if (!isOpen) return null;
 
@@ -137,18 +143,58 @@ ${numberSets.map((numbers, index) =>
     }
   };
 
+  // 모바일(iOS 등) 폴백 지원 복사 함수
+  const robustCopy = async (text: string) => {
+    // 1) Clipboard API
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        await navigator.clipboard.writeText(text);
+        return { ok: true, method: 'clipboard' } as const;
+      }
+    } catch {
+      // continue to fallback
+    }
+
+    // 2) textarea + selection fallback (works on many mobile browsers)
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      // place offscreen but focusable
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      ta.style.top = '0';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      // some browsers (iOS) need setSelectionRange
+      ta.setSelectionRange(0, ta.value.length);
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (ok) return { ok: true, method: 'execCommand' } as const;
+    } catch {
+      // ignore and fallthrough
+    }
+
+    // 3) final: unable to copy programmatically
+    return { ok: false } as const;
+  };
+
   const handleCopy = async () => {
     const text = getFormattedText(selectedFormat);
-    try {
-      await navigator.clipboard.writeText(text);
+    setCopyEvent('');
+    const res = await robustCopy(text);
+    if (res.ok) {
       onCopy(text);
       setCopied(true);
+      setCopyEvent(`copy success (${res.method})`);
       setTimeout(() => {
         setCopied(false);
         onClose();
-      }, 1500);
-    } catch (err) {
-      console.error('복사 실패:', err);
+      }, 1200);
+    } else {
+      setManualCopyText(text);
+      setShowManualCopy(true);
+      setCopyEvent('copy failed');
     }
   };
 
@@ -186,35 +232,89 @@ ${numberSets.map((numbers, index) =>
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-number-appear">
-      <div className="bg-white dark:bg-navy-800 rounded-2xl shadow-premium max-w-4xl w-full max-h-[90vh] overflow-hidden animate-float">
-        <div className="p-6 border-b border-gray-200 dark:border-navy-700 animate-float">
+    <Modal open={isOpen} onClose={onClose}>
+      <div className="bg-white dark:bg-navy-800 rounded-2xl shadow-premium w-full h-full max-h-[95vh] overflow-hidden animate-float flex flex-col">
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-navy-700 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gradient">
+            <h2 className="text-lg sm:text-2xl font-bold text-gradient">
               📋 복사 포맷 선택
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl haptic-light animate-glow-pulse"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl sm:text-2xl haptic-light animate-glow-pulse min-w-[44px] min-h-[44px] flex items-center justify-center"
             >
               ✕
             </button>
           </div>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm sm:text-base">
             원하는 스타일로 번호를 복사하세요
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row max-h-[calc(90vh-120px)]">
+        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
           {/* 포맷 선택 */}
-          <div className="lg:w-1/3 p-6 border-r border-gray-200 dark:border-navy-700 animate-float">
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">
+          <div className="lg:w-1/3 p-4 sm:p-6 lg:border-r border-gray-200 dark:border-navy-700 animate-float overflow-y-auto">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4 text-sm sm:text-base">
               포맷 스타일
             </h3>
-            <div className="space-y-2">
+            {/* 모바일 전용: 접근성 좋은 라디오 목록 (작은 화면에서 사용) */}
+            <div className="block lg:hidden mb-3">
+              <fieldset role="radiogroup" aria-label="복사 포맷 선택" className="space-y-3">
+                {formats.map(f => (
+                  <label
+                      key={f.id}
+                      onClick={() => {
+                        console.log('label onClick', f.id);
+                        setSelectedFormat(f.id);
+                      }}
+                      onTouchEnd={() => {
+                        console.log('label onTouchEnd', f.id);
+                        setSelectedFormat(f.id);
+                      }}
+                      className={`flex items-start gap-3 p-4 rounded-lg border-2 transition-colors duration-150 cursor-pointer select-none min-h-[60px] touch-manipulation ${
+                        selectedFormat === f.id
+                          ? 'bg-primary-50 dark:bg-primary-900 border-primary-300 dark:border-primary-700'
+                          : 'bg-white dark:bg-navy-800 border-gray-200 dark:border-navy-600 hover:border-primary-200 dark:hover:border-primary-800'
+                      }`}
+                      style={{ 
+                        touchAction: 'manipulation',
+                        WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.1)'
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="copyFormat"
+                        value={f.id}
+                        checked={selectedFormat === f.id}
+                        onChange={() => {
+                          console.log('input onChange', f.id);
+                          setSelectedFormat(f.id);
+                        }}
+                        className="sr-only"
+                      />
+                      <div className={`w-5 h-5 rounded-full mt-1 flex-shrink-0 border-2 ${
+                        selectedFormat === f.id 
+                          ? 'bg-primary-600 border-primary-600' 
+                          : 'bg-white dark:bg-navy-700 border-gray-300 dark:border-gray-500'
+                      }`}>
+                        {selectedFormat === f.id && (
+                          <div className="w-full h-full rounded-full bg-white scale-50"></div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-800 dark:text-gray-200 text-base">{f.name}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">{f.desc}</div>
+                      </div>
+                    </label>
+                ))}
+              </fieldset>
+            </div>
+
+            <div className="space-y-2 hidden lg:block">
               {formats.map(format => (
                 <button
                   key={format.id}
+                  type="button"
                   onClick={() => setSelectedFormat(format.id)}
                   className={`w-full text-left p-3 rounded-lg transition-all duration-200 haptic-light animate-glow-pulse ${
                     selectedFormat === format.id
@@ -234,56 +334,77 @@ ${numberSets.map((numbers, index) =>
           </div>
 
           {/* 미리보기 */}
-          <div className="lg:w-2/3 p-6 animate-float">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+          <div className="lg:w-2/3 p-4 sm:p-6 animate-float flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between mb-4 flex-shrink-0">
+              <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-sm sm:text-base">
                 미리보기
               </h3>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 {getFormattedText(selectedFormat).length}자
               </div>
             </div>
             
-            <div className="bg-gray-50 dark:bg-navy-900 rounded-xl p-4 h-80 overflow-auto animate-number-appear">
-              <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">
+            <div className="bg-gray-50 dark:bg-navy-900 rounded-xl p-3 sm:p-4 flex-1 overflow-auto animate-number-appear mb-4">
+              <pre className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">
                 {getFormattedText(selectedFormat)}
               </pre>
             </div>
 
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={handleCopy}
-                disabled={copied}
-                className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-200 haptic-light animate-glow-pulse ${
-                  copied
-                    ? 'bg-green-500 text-white'
-                    : 'btn-primary hover:shadow-lg transform hover:-translate-y-0.5'
-                }`}
-              >
-                {copied ? (
-                  <>
-                    <span className="mr-2">✅</span>
-                    복사 완료!
-                  </>
-                ) : (
-                  <>
-                    <span className="mr-2">📋</span>
-                    클립보드에 복사
-                  </>
-                )}
-              </button>
-              
-              <button
-                onClick={onClose}
-                className="btn-secondary py-3 px-6 haptic-light animate-glow-pulse"
-              >
-                취소
-              </button>
+            <div className="flex-shrink-0">
+              {showManualCopy && (
+                <div className="w-full mb-4">
+                  <div className="text-xs text-red-500 mb-2">복사 기능이 차단되어 직접 복사해 주세요.</div>
+                  <textarea
+                    className="w-full p-3 rounded-lg border border-gray-300 text-xs font-mono bg-gray-50 resize-none"
+                    rows={4}
+                    value={manualCopyText}
+                    readOnly
+                    onFocus={e => e.target.select()}
+                    style={{ touchAction: 'manipulation' }}
+                  />
+                  <div className="text-xs text-gray-500 mt-2">텍스트를 길게 눌러 전체 선택 후 복사하세요.</div>
+                </div>
+              )}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleCopy}
+                  disabled={copied}
+                  className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-200 haptic-light animate-glow-pulse min-h-[48px] text-base ${
+                    copied
+                      ? 'bg-green-500 text-white'
+                      : 'btn-primary hover:shadow-lg transform hover:-translate-y-0.5'
+                  }`}
+                  style={{ touchAction: 'manipulation' }}
+                >
+                  {copied ? (
+                    <>
+                      <span className="mr-2">✅</span>
+                      복사 완료!
+                    </>
+                  ) : (
+                    <>
+                      <span className="mr-2">📋</span>
+                      클립보드에 복사
+                    </>
+                  )}
+                </button>
+                
+                <button
+                  onClick={onClose}
+                  className="btn-secondary py-4 px-6 haptic-light animate-glow-pulse min-h-[48px] text-base sm:flex-shrink-0"
+                  style={{ touchAction: 'manipulation' }}
+                >
+                  취소
+                </button>
+              </div>
+              {copyEvent && (
+                <div className="text-xs text-gray-500 mt-2">events: {copyEvent}</div>
+              )}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

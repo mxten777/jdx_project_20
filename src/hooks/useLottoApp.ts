@@ -131,9 +131,11 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
     setAppState(prev => ({ ...prev, darkMode: !prev.darkMode }));
   }, []);
 
-  // 뷰 변경 핸들러 (메모이제이션)
+  // 뷰 변경 핸들러 (메모이제이션) - 페이지 이동 시 맨 위로 스크롤
   const setView = useCallback((view: 'main' | 'generate' | 'history') => {
     setCurrentView(view);
+    // 페이지 이동 시 즉시 맨 위로 스크롤
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   // 메모이제이션된 반환값

@@ -36,63 +36,72 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
   const counts = [1, 3, 5, 10];
 
   return (
-    <div className="min-h-screen premium-bg p-4">
+    <div className="min-h-screen p-4 pt-8">
       <div className="max-w-4xl mx-auto">
         {/* 뒤로가기 버튼 */}
         <button 
-          className="mb-6 btn-premium-secondary flex items-center gap-2"
+          className="mb-6 btn-premium-secondary flex items-center gap-2 text-sm sm:text-base"
           onClick={onNavigateBack}
         >
           <span>←</span> 메인으로
         </button>
 
         {/* 조합 개수 선택 */}
-        <div className="flex gap-2 mb-4 justify-center">
+        <div className="flex flex-wrap gap-2 mb-6 justify-center">
           {counts.map((count) => (
             <button
               key={count}
-              className={`btn-premium-main text-xs px-3 py-1 rounded-full ${appState.generateCount === count ? 'ring-2 ring-gold-400' : ''}`}
+              className={`btn-premium-main text-sm sm:text-base px-4 py-2 rounded-full min-w-[80px] ${appState.generateCount === count ? 'ring-2 ring-white ring-opacity-50' : ''}`}
               onClick={() => setGenerateCount(count)}
               disabled={isGenerating}
+              style={{ touchAction: 'manipulation' }}
             >
-              {count}개 생성
+              {count}개
             </button>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="glass-card p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="glass-card p-4 sm:p-6">
             <GeneratorOptions options={options} onOptionsChange={onOptionsChange} />
           </div>
-          <div className="glass-card p-6">
-            <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="glass-card p-4 sm:p-6">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
               <button 
-                className="btn-premium-main text-sm py-3" 
+                className="btn-generate text-xs sm:text-sm py-3 sm:py-4 min-h-[48px]" 
                 onClick={handleRandomGenerate}
                 disabled={isGenerating}
+                style={{ touchAction: 'manipulation' }}
               >
-                완전 랜덤
+                <span className="block">완전</span>
+                <span className="block">랜덤</span>
               </button>
               <button 
-                className="btn-premium-main text-sm py-3" 
+                className="btn-generate text-xs sm:text-sm py-3 sm:py-4 min-h-[48px]" 
                 onClick={handleBalancedGenerate}
                 disabled={isGenerating}
+                style={{ touchAction: 'manipulation' }}
               >
-                균형 생성
+                <span className="block">균형</span>
+                <span className="block">생성</span>
               </button>
               <button 
-                className="btn-premium-main text-sm py-3" 
+                className="btn-generate text-xs sm:text-sm py-3 sm:py-4 min-h-[48px]" 
                 onClick={handleStatisticsGenerate}
                 disabled={isGenerating}
+                style={{ touchAction: 'manipulation' }}
               >
-                통계 기반
+                <span className="block">통계</span>
+                <span className="block">기반</span>
               </button>
               <button 
-                className="btn-premium-main text-sm py-3" 
+                className="btn-generate text-xs sm:text-sm py-3 sm:py-4 min-h-[48px]" 
                 onClick={handleCustomGenerate}
                 disabled={isGenerating}
+                style={{ touchAction: 'manipulation' }}
               >
-                커스텀 생성
+                <span className="block">커스텀</span>
+                <span className="block">생성</span>
               </button>
             </div>
             <ResultDisplay numberSets={currentNumbers} isAnimating={isGenerating} />

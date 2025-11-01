@@ -21,7 +21,10 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   const [showSocialModal, setShowSocialModal] = useState(false);
 
 
-  const handleCopy = () => {
+  const handleCopy = (e?: React.MouseEvent | React.TouchEvent) => {
+    console.log('Copy button clicked/touched');
+    e?.preventDefault();
+    e?.stopPropagation();
     setShowCopyModal(true);
   };
 
@@ -232,10 +235,15 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
           onClick={handleCopy}
           className="btn-secondary text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light"
           title="다양한 포맷으로 복사하기"
+          style={{ 
+            touchAction: 'manipulation', 
+            WebkitTapHighlightColor: 'transparent',
+            minWidth: '44px',
+            minHeight: '44px'
+          }}
         >
           <span className="text-sm sm:text-lg">{copied ? '✅' : '📋'}</span>
-          <span className="hidden sm:inline">{copied ? '복사됨!' : '프리미엄 복사'}</span>
-          <span className="sm:hidden">{copied ? '복사됨!' : '복사'}</span>
+          <span className="inline">{copied ? '복사됨!' : '복사'}</span>
         </button>
         <button
           onClick={() => setShowQRModal(true)}
@@ -285,6 +293,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
         isOpen={showCopyModal}
         onClose={() => setShowCopyModal(false)}
         onCopy={handleCopyComplete}
+  // modalClassName removed
       />
     </div>
   );

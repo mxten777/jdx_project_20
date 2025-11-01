@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Modal Touch/Click Test</title>
+  <style>
+    :root{--bg:#fff;--overlay:rgba(0,0,0,.5);--card:#fff}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:#f3f1ee}
+    .page{padding:24px;max-width:420px;margin:40px auto}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;background:#f5f3f2;border:1px solid #ddd;cursor:pointer}
+
+    /* modal */
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--overlay);z-index:999}
+    .overlay.open{display:flex}
+    .modal{width:90%;max-width:420px;background:var(--card);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);overflow:hidden}
+    .modal .head{padding:16px;border-bottom:1px solid #eee}
+    .modal .body{display:flex;gap:0}
+    .left{width:40%;min-width:140px;padding:12px;border-right:1px solid #f0f0f0}
+    .right{flex:1;padding:12px}
+    .radio-item{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:8px;margin-bottom:8px}
+    .radio-item.active{background:#eef7ff;border:1px solid #bfe0ff}
+    .radio-bullet{width:14px;height:14px;border-radius:999px;background:#ccc;margin-top:4px}
+    .radio-bullet.active{background:#1d9bf0}
+    .preview{background:#fafafa;border-radius:8px;padding:8px;height:160px;overflow:auto}
+    .log{font-size:12px;color:#666;margin-top:8px}
+    @media (max-width:640px){
+      .left{width:100%;border-right:none;border-bottom:1px solid #f0f0f0}
+      .body{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h2>Modal Touch/Click Test</h2>
+    <p>Open this page on your mobile device (or desktop mobile emulator) and test tap/click behavior.</p>
+    <button id="openBtn" class="btn">Open Modal</button>
+    <div class="log" id="status">status: idle</div>
+  </div>
+
+  <div id="overlay" class="overlay" role="presentation">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Test Modal">
+      <div class="head">
+        <strong>Choose format (tap to select)</strong>
+        <button id="closeBtn" style="float:right" class="btn">✕</button>
+      </div>
+      <div class="body">
+        <div class="left" id="list">
+          <!-- radio items inserted by JS -->
+        </div>
+        <div class="right">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div><strong>Preview</strong></div>
+            <div id="charCount" style="color:#888;font-size:12px">0 chars</div>
+          </div>
+          <div class="preview" id="preview">(preview will appear here)</div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="copyBtn" class="btn">Copy text</button>
+            <button id="closeBtn2" class="btn">Close</button>
+          </div>
+          <div class="log" id="events">events: </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const formats = [
+        {id:'premium',name:'🎲 Premium',desc:'Fancy emoji format'},
+        {id:'simple',name:'📝 Simple',desc:'Simple comma list'},
+        {id:'table',name:'📊 Table',desc:'ASCII table'},
+        {id:'colorful',name:'🌈 Colorful',desc:'Emoji colored by range'}
+      ];
+
+      const overlay = document.getElementById('overlay');
+      const openBtn = document.getElementById('openBtn');
+      const closeBtn = document.getElementById('closeBtn');
+      const closeBtn2 = document.getElementById('closeBtn2');
+      const list = document.getElementById('list');
+      const preview = document.getElementById('preview');
+      const events = document.getElementById('events');
+      const status = document.getElementById('status');
+      const charCount = document.getElementById('charCount');
+      const copyBtn = document.getElementById('copyBtn');
+
+      let selected = formats[0].id;
+
+      function setPreview(id){
+        selected = id;
+        const text = `Selected: ${id}\nGenerated sample content for format ${id}...\n(6 numbers: 01 02 03 04 05 06)`;
+        preview.textContent = text;
+        charCount.textContent = text.length + ' chars';
+      }
+
+      // build radio list with handlers on label
+      formats.forEach(f => {
+        const label = document.createElement('div');
+        label.className = 'radio-item' + (selected===f.id? ' active':'');
+        label.tabIndex = 0;
+        label.innerHTML = `
+          <div class='radio-bullet ${selected===f.id? 'active':''}'></div>
+          <div>
+            <div style='font-weight:600'>${f.name}</div>
+            <div style='font-size:12px;color:#666;margin-top:4px'>${f.desc}</div>
+          </div>`;
+
+        // click handler
+        label.addEventListener('click', e => {
+          console.log('label click', f.id);
+          events.textContent = 'events: label click '+f.id;
+          selectItem(f.id);
+        }, {passive:true});
+
+        // touchend handler
+        label.addEventListener('touchend', e => {
+          console.log('label touchend', f.id);
+          events.textContent = 'events: label touchend '+f.id;
+          selectItem(f.id);
+        }, {passive:true});
+
+        // keyboard support
+        label.addEventListener('keydown', e => {
+          if(e.key === 'Enter' || e.key === ' ') { selectItem(f.id); e.preventDefault(); }
+        });
+
+        list.appendChild(label);
+      });
+
+      function refreshList(){
+        Array.from(list.children).forEach((child, i) => {
+          const f = formats[i];
+          child.classList.toggle('active', selected===f.id);
+          const bullet = child.querySelector('.radio-bullet');
+          if(bullet) bullet.classList.toggle('active', selected===f.id);
+        });
+      }
+
+      function selectItem(id){
+        console.log('selectItem', id);
+        selected = id;
+        setPreview(id);
+        refreshList();
+      }
+
+      openBtn.addEventListener('click', ()=>{
+        overlay.classList.add('open');
+        status.textContent = 'status: modal open';
+        setPreview(selected);
+      });
+
+      [closeBtn, closeBtn2].forEach(b => b.addEventListener('click', ()=>{ overlay.classList.remove('open'); status.textContent='status: idle'; }));
+
+      // close on backdrop click
+      overlay.addEventListener('click', e => { if(e.target===overlay){ overlay.classList.remove('open'); status.textContent='status: idle'; } });
+
+      copyBtn.addEventListener('click', async ()=>{
+        try{
+          await navigator.clipboard.writeText(preview.textContent);
+          events.textContent = 'events: copied';
+          alert('Copied');
+          overlay.classList.remove('open');
+        }catch(err){
+          events.textContent = 'events: copy failed';
+          alert('Copy failed - use long-press to select');
+        }
+      });
+
+      // initial
+      setPreview(selected);
+      refreshList();
+
+      // helper for remote debugging hint
+      console.log('Modal test ready. Open on mobile and check label click/touchend logs.');
+    })();
+  </script>
+</body>
+</html>

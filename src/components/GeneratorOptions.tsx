@@ -68,7 +68,7 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
   return (
     <div
       className="relative rich-card animate-number-appear max-w-xl mx-auto w-full sm:w-auto flex flex-col items-center"
-      style={{ minWidth: 0, boxSizing: 'border-box', padding: '1.2rem 0.5rem' }}
+      style={{ minWidth: 0, boxSizing: 'border-box', padding: '1.2rem 0.5rem', minHeight: 'auto' }}
     >
       {/* 프리미엄 noise/particle 오버레이 */}
       <div className="premium-noise"></div>
@@ -87,96 +87,75 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
       </div>
 
       {/* 번호 고정/제외 모드 선택 */}
-      <div className="flex gap-2 mb-2 justify-center">
+      <div className="flex flex-wrap gap-2 mb-4 justify-center">
         <button
-          className={`rich-btn text-xs px-3 py-1 min-w-[70px] max-w-[90px] ${mode === 'fixed' ? 'ring-2 ring-gold-400' : ''}`}
-          style={{ minWidth: 70, maxWidth: 90, boxSizing: 'border-box' }}
+          className={`rich-btn text-xs sm:text-sm px-3 py-2 min-w-[80px] ${mode === 'fixed' ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => setMode(mode === 'fixed' ? 'none' : 'fixed')}
-        >번호 고정</button>
+          style={{ touchAction: 'manipulation' }}
+        >
+          번호 고정
+        </button>
         <button
-          className={`rich-btn text-xs px-3 py-1 min-w-[70px] max-w-[90px] ${mode === 'excluded' ? 'ring-2 ring-gold-400' : ''}`}
-          style={{ minWidth: 70, maxWidth: 90, boxSizing: 'border-box' }}
+          className={`rich-btn text-xs sm:text-sm px-3 py-2 min-w-[80px] ${mode === 'excluded' ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => setMode(mode === 'excluded' ? 'none' : 'excluded')}
-        >번호 제외</button>
+          style={{ touchAction: 'manipulation' }}
+        >
+          번호 제외
+        </button>
         <button
-          className="rich-btn text-xs px-3 py-1 min-w-[70px] max-w-[90px]"
-          style={{ minWidth: 70, maxWidth: 90, boxSizing: 'border-box' }}
+          className="rich-btn text-xs sm:text-sm px-3 py-2 min-w-[80px]"
           onClick={clearAll}
-        >전체 초기화</button>
+          style={{ touchAction: 'manipulation' }}
+        >
+          전체 초기화
+        </button>
       </div>
 
       {/* 프리미엄 고급 옵션 카드 */}
-      <div
-        className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3 sm:mb-4 w-full max-w-2xl mx-auto justify-center items-stretch justify-items-center place-items-center"
-        style={{ minWidth: 0, boxSizing: 'border-box' }}
-      >
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 w-full">
         <button
-          className={`rich-btn flex flex-col flex-1 items-center justify-center px-2 py-2 sm:px-3 sm:py-3 text-xs sm:text-base min-w-[70px] max-w-[120px] min-h-[90px] text-center ${options.avoidConsecutive ? 'ring-2 ring-gold-400' : ''}`}
-          style={{ minWidth: 70, maxWidth: 120, flexGrow: 1, flexBasis: 0, boxSizing: 'border-box' }}
+          className={`rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[80px] sm:min-h-[100px] ${options.avoidConsecutive ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => handleToggle('avoidConsecutive')}
+          style={{ touchAction: 'manipulation' }}
         >
-          <span className="font-bold">연속번호 방지</span>
-          <span className="block text-2xs sm:text-xs text-gold-500">연속된 번호 조합 제외</span>
+          <span className="font-bold text-xs sm:text-sm leading-tight">연속번호</span>
+          <span className="font-bold text-xs sm:text-sm leading-tight">방지</span>
+          <span className="block text-xs text-gold-500 mt-1 leading-tight">연속된 번호</span>
+          <span className="block text-xs text-gold-500 leading-tight">조합 제외</span>
         </button>
         <button
-          className={`rich-btn flex flex-col flex-1 items-center justify-center px-2 py-2 sm:px-3 sm:py-3 text-xs sm:text-base min-w-[70px] max-w-[120px] min-h-[90px] text-center ${options.avoidSameEnding ? 'ring-2 ring-gold-400' : ''}`}
-          style={{ minWidth: 70, maxWidth: 120, flexGrow: 1, flexBasis: 0, boxSizing: 'border-box' }}
+          className={`rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[80px] sm:min-h-[100px] ${options.avoidSameEnding ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => handleToggle('avoidSameEnding')}
+          style={{ touchAction: 'manipulation' }}
         >
-          <span className="font-bold">같은 끝자리 방지</span>
-          <span className="block text-2xs sm:text-xs text-gold-500">동일 일의 자리 번호 제외</span>
+          <span className="font-bold text-xs sm:text-sm leading-tight">같은 끝자리</span>
+          <span className="font-bold text-xs sm:text-sm leading-tight">방지</span>
+          <span className="block text-xs text-gold-500 mt-1 leading-tight">동일 일의 자리</span>
+          <span className="block text-xs text-gold-500 leading-tight">번호 제외</span>
         </button>
         <button
-          className={`rich-btn flex flex-col flex-1 items-center justify-center px-2 py-2 sm:px-3 sm:py-3 text-xs sm:text-base min-w-[70px] max-w-[120px] min-h-[90px] text-center ${options.oddEvenBalance ? 'ring-2 ring-gold-400' : ''}`}
-          style={{ minWidth: 70, maxWidth: 120, flexGrow: 1, flexBasis: 0, boxSizing: 'border-box' }}
+          className={`rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[80px] sm:min-h-[100px] ${options.oddEvenBalance ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => handleToggle('oddEvenBalance')}
+          style={{ touchAction: 'manipulation' }}
         >
-          <span className="font-bold">홀짝 균형</span>
-          <span className="block text-2xs sm:text-xs text-gold-500">홀수/짝수 개수 균형</span>
+          <span className="font-bold text-xs sm:text-sm leading-tight">홀짝</span>
+          <span className="font-bold text-xs sm:text-sm leading-tight">균형</span>
+          <span className="block text-xs text-gold-500 mt-1 leading-tight">홀수/짝수</span>
+          <span className="block text-xs text-gold-500 leading-tight">개수 균형</span>
         </button>
-        <div
-          className="rich-btn flex flex-col flex-1 items-center justify-between px-1 py-3 sm:px-2 sm:py-4 text-xs sm:text-base min-w-[70px] max-w-[120px] min-h-[120px] text-center"
-          style={{
-            minWidth: 70,
-            maxWidth: 120,
-            minHeight: 120,
-            flexGrow: 1,
-            flexBasis: 0,
-            boxSizing: 'border-box',
-            padding: '0.7rem 0.2rem',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            overflow: 'visible',
-          }}
-        >
-          <div className="font-bold">합계 범위</div>
-          <div
-            className="flex flex-col xs:flex-row items-center justify-center gap-1 w-full"
-            style={{ minWidth: 0, width: '100%', flexWrap: 'nowrap', overflow: 'hidden', boxSizing: 'border-box' }}
-          >
+        <div className="rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[80px] sm:min-h-[100px]">
+          <div className="font-bold text-xs sm:text-sm mb-2">합계 범위</div>
+          <div className="flex items-center gap-1">
             <input
               type="number"
-              className="text-[11px] sm:text-xs text-center px-0.5 font-bold"
+              className="text-xs text-center w-12 h-6 px-1 font-bold bg-gray-800 text-yellow-400 border border-yellow-400 rounded"
               min={21}
               max={255}
               value={options.sumRange?.min || 21}
               onChange={e => handleSumRangeChange('min', e.target.value)}
-              style={{
-                minWidth: 32,
-                maxWidth: 38,
-                width: '100%',
-                background: '#232526',
-                color: '#ffd700',
-                border: '1.5px solid #ffd700',
-                borderRadius: '7px',
-                boxShadow: '0 1px 4px 0 rgba(212,175,55,0.10)',
-                marginLeft: 0,
-                marginRight: 0,
-                boxSizing: 'border-box',
-                textAlign: 'center',
-              }}
+              style={{ touchAction: 'manipulation' }}
             />
-            <span className="text-gold-300 text-xs font-bold">~</span>
+            <span className="text-yellow-300 text-xs font-bold">~</span>
             <input
               type="number"
               className="text-[11px] sm:text-xs text-center px-0.5 font-bold"
@@ -197,6 +176,7 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
                 marginRight: 0,
                 boxSizing: 'border-box',
                 textAlign: 'center',
+                touchAction: 'manipulation'
               }}
             />
           </div>
@@ -206,8 +186,16 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
 
       {/* 번호 선택 영역 */}
       <div
-        className="grid grid-cols-9 gap-1 sm:gap-2 mb-1 sm:mb-2 px-1 sm:px-2 mx-auto justify-items-center place-items-center"
-        style={{ fontSize: '12.5px', maxWidth: '100%', overflowX: 'auto', minHeight: 'auto', boxSizing: 'border-box' }}
+        className="grid grid-cols-9 gap-1 sm:gap-2 mb-3 sm:mb-4 px-2 sm:px-3 py-3 mx-auto justify-items-center place-items-center w-full"
+        style={{ 
+          fontSize: '12.5px', 
+          maxWidth: '100%', 
+          overflowX: 'visible', 
+          overflowY: 'visible',
+          minHeight: '220px',
+          boxSizing: 'border-box',
+          paddingBottom: '24px'
+        }}
       >
         {allNumbers.map((number) => (
           <NumberBall

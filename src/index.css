@@ -5,7 +5,8 @@
     box-shadow: 0 8px 40px 0 rgba(44, 44, 84, 0.18), 0 1.5px 8px 0 rgba(212, 175, 55, 0.12);
     border: 1.5px solid rgba(212, 175, 55, 0.18);
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
     padding: 2rem 1.2rem;
   }
 
@@ -91,11 +92,23 @@
 
 /* 프리미엄 Glassmorphism 스타일 */
 @layer components {
-  /* 프리미엄 배경 그라데이션 */
+  /* 프리미엄 배경 그라데이션 - 첨부 이미지 스타일 적용 */
   .premium-bg {
-    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 25%, #f8b500 50%, #e55039 75%, #6c5ce7 100%);
+    background: linear-gradient(135deg, #e57373 0%, #ba68c8 15%, #9c27b0 35%, #673ab7 55%, #3f51b5 75%, #2196f3 100%);
     background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+    animation: gradientShift 20s ease infinite;
+  }
+
+  /* 메인 히어로 그라데이션 (첨부 이미지와 동일한 느낌) */
+  .hero-gradient {
+    background: linear-gradient(145deg, #e1bee7 0%, #ba68c8 25%, #9c27b0 50%, #673ab7 75%, #3f51b5 100%);
+    background-size: 300% 300%;
+    animation: gradientShift 18s ease infinite;
+  }
+
+  /* 카드 배경 그라데이션 */
+  .card-gradient {
+    background: linear-gradient(135deg, rgba(186, 104, 200, 0.9) 0%, rgba(156, 39, 176, 0.8) 50%, rgba(103, 58, 183, 0.9) 100%);
   }
 
   /* 프리미엄 글래스 카드 */
@@ -115,14 +128,14 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  /* 프리미엄 버튼 - 메인 액션 */
+  /* 프리미엄 버튼 - 메인 액션 (첨부 이미지 컬러 반영) */
   .btn-premium-main {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ba68c8 0%, #9c27b0 50%, #673ab7 100%);
     color: white;
     font-weight: 600;
     border-radius: 20px;
     padding: 16px 32px;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 30px rgba(156, 39, 176, 0.4);
     transition: all 0.3s ease;
     border: none;
     position: relative;
@@ -131,7 +144,26 @@
 
   .btn-premium-main:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+    box-shadow: 0 15px 40px rgba(156, 39, 176, 0.6);
+    background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 50%, #9c27b0 100%);
+  }
+
+  /* 생성 버튼 스타일 */
+  .btn-generate {
+    background: linear-gradient(135deg, #42a5f5 0%, #2196f3 50%, #1976d2 100%);
+    color: white;
+    font-weight: 600;
+    border-radius: 16px;
+    padding: 14px 28px;
+    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .btn-generate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(33, 150, 243, 0.5);
+    background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 50%, #2196f3 100%);
   }
 
   .btn-premium-main:active {
@@ -155,9 +187,25 @@
     transform: translateY(-2px);
   }
 
-  /* 프리미엄 텍스트 그라데이션 */
+  /* 프리미엄 텍스트 그라데이션 (첨부 이미지 컬러) */
   .text-premium-gradient {
-    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #f8b500 100%);
+    background: linear-gradient(135deg, #e1bee7 0%, #ba68c8 30%, #9c27b0 70%, #673ab7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 제목 텍스트 그라데이션 */
+  .text-hero-gradient {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #e3f2fd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 강조 텍스트 그라데이션 */
+  .text-accent-gradient {
+    background: linear-gradient(135deg, #42a5f5 0%, #2196f3 50%, #1976d2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -233,7 +281,10 @@
 
   /* 다크모드 지원 */
   .dark .glass-card {
-    @apply glass-card-dark;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   .dark .premium-dropdown {
