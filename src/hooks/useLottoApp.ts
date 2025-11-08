@@ -4,6 +4,7 @@ import {
   generateBalancedNumbers,
   generateStatisticalNumbers,
   generateCustomNumbers,
+  generateAINumbers,
   createLottoResult
 } from '../utils/lottoGenerator';
 import { retry } from '../utils/retry';
@@ -80,6 +81,9 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
             case 'custom':
               result.push(generateCustomNumbers(appState.options));
               break;
+            case 'ai':
+              result.push(generateAINumbers(appState.options, appState.statistics || defaultStats, appState.history.results));
+              break;
             default:
               result.push(generateRandomNumbers());
           }
@@ -102,10 +106,11 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
       }));
       // 성공 메시지 표시
       const methodNames: Partial<Record<GenerationMethod, string>> = {
-        random: '완전 랜덤',
-        balanced: '균형 생성',
-        statistics: '통계 기반',
-        custom: '커스텀 생성'
+  random: '완전 랜덤',
+  balanced: '균형 생성',
+  statistics: '통계 기반',
+  custom: '커스텀 생성',
+  ai: 'AI 추천'
       };
       options?.onSuccess?.(`${methodNames[method] || '번호'} ${appState.generateCount}개 생성 완료!`);
     } catch (error) {
@@ -115,7 +120,7 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
     } finally {
       setAppState(prev => ({ ...prev, isGenerating: false }));
     }
-  }, [appState.options, appState.statistics, appState.generateCount, options]);
+  }, [appState.options, appState.statistics, appState.generateCount, appState.history.results, options]);
   // 조합 개수 변경 핸들러
   const setGenerateCount = useCallback((count: number) => {
     setAppState(prev => ({ ...prev, generateCount: count }));

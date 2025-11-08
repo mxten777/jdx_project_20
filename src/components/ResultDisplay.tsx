@@ -150,7 +150,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
                 {numbers.map((number, numIndex) => (
                   <div
                     key={numIndex}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary-500 text-white text-xs 
+                    className="w-6 h-6 sm:w-6 sm:h-6 rounded-full bg-primary-500 text-white text-xs 
                              font-bold flex items-center justify-center"
                   >
                     {number}
@@ -167,7 +167,9 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
         <button
           onClick={() => setShowStats(!showStats)}
           className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 
-                   dark:hover:text-primary-300 transition-colors duration-200 font-medium haptic-light"
+                   dark:hover:text-primary-300 transition-colors duration-200 font-medium haptic-light
+                   py-3 px-4 min-h-[48px]"
+          style={{ touchAction: 'manipulation' }}
         >
           {showStats ? `${selectedSet + 1}게임 통계 숨기기 ▲` : `${selectedSet + 1}게임 통계 보기 ▼`}
         </button>
@@ -224,8 +226,9 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
       <div className="grid grid-cols-2 sm:flex sm:justify-center gap-2 sm:gap-3 animate-float">
         <button
           onClick={() => setShowSocialModal(true)}
-          className="btn-secondary text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light"
+          className="btn-secondary text-xs sm:text-sm px-4 py-3 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light min-h-[48px]"
           title="소셜로 공유하기"
+          style={{ touchAction: 'manipulation' }}
         >
           <span className="text-sm sm:text-lg">🌐</span>
           <span className="hidden sm:inline">소셜 공유</span>
@@ -233,13 +236,11 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
         </button>
         <button
           onClick={handleCopy}
-          className="btn-secondary text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light"
+          className="btn-secondary text-xs sm:text-sm px-4 py-3 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light min-h-[48px]"
           title="다양한 포맷으로 복사하기"
           style={{ 
             touchAction: 'manipulation', 
-            WebkitTapHighlightColor: 'transparent',
-            minWidth: '44px',
-            minHeight: '44px'
+            WebkitTapHighlightColor: 'transparent'
           }}
         >
           <span className="text-sm sm:text-lg">{copied ? '✅' : '📋'}</span>
@@ -247,8 +248,9 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
         </button>
         <button
           onClick={() => setShowQRModal(true)}
-          className="btn-secondary text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light"
+          className="btn-secondary text-xs sm:text-sm px-4 py-3 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light min-h-[48px]"
           title="QR코드로 보기"
+          style={{ touchAction: 'manipulation' }}
         >
           <span className="text-sm sm:text-lg">🔳</span>
           <span className="hidden sm:inline">QR코드</span>
@@ -258,8 +260,9 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
         {onSave && (
           <button
             onClick={onSave}
-            className="btn-secondary text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light"
+            className="btn-secondary text-xs sm:text-sm px-4 py-3 sm:px-4 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 animate-glow-pulse haptic-light min-h-[48px]"
             title="즐겨찾기에 저장"
+            style={{ touchAction: 'manipulation' }}
           >
             <span className="text-sm sm:text-lg">⭐</span>
             <span className="hidden sm:inline">저장</span>

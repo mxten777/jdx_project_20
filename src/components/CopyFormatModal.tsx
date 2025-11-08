@@ -258,74 +258,61 @@ ${numberSets.map((numbers, index) =>
               포맷 스타일
             </h3>
             {/* 모바일 전용: 접근성 좋은 라디오 목록 (작은 화면에서 사용) */}
-            <div className="block lg:hidden mb-3">
+            <div className="block lg:hidden mb-4">
               <fieldset role="radiogroup" aria-label="복사 포맷 선택" className="space-y-3">
                 {formats.map(f => (
-                  <label
+                  <button
                       key={f.id}
+                      type="button"
                       onClick={() => {
-                        console.log('label onClick', f.id);
+                        console.log('button onClick', f.id);
                         setSelectedFormat(f.id);
                       }}
-                      onTouchEnd={() => {
-                        console.log('label onTouchEnd', f.id);
-                        setSelectedFormat(f.id);
-                      }}
-                      className={`flex items-start gap-3 p-4 rounded-lg border-2 transition-colors duration-150 cursor-pointer select-none min-h-[60px] touch-manipulation ${
+                      className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none min-h-[72px] text-left ${
                         selectedFormat === f.id
-                          ? 'bg-primary-50 dark:bg-primary-900 border-primary-300 dark:border-primary-700'
-                          : 'bg-white dark:bg-navy-800 border-gray-200 dark:border-navy-600 hover:border-primary-200 dark:hover:border-primary-800'
+                          ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-500 shadow-md'
+                          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                       style={{ 
                         touchAction: 'manipulation',
                         WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.1)'
                       }}
                     >
-                      <input
-                        type="radio"
-                        name="copyFormat"
-                        value={f.id}
-                        checked={selectedFormat === f.id}
-                        onChange={() => {
-                          console.log('input onChange', f.id);
-                          setSelectedFormat(f.id);
-                        }}
-                        className="sr-only"
-                      />
-                      <div className={`w-5 h-5 rounded-full mt-1 flex-shrink-0 border-2 ${
+                      <div className={`w-6 h-6 rounded-full mt-1 flex-shrink-0 border-3 flex items-center justify-center ${
                         selectedFormat === f.id 
-                          ? 'bg-primary-600 border-primary-600' 
-                          : 'bg-white dark:bg-navy-700 border-gray-300 dark:border-gray-500'
+                          ? 'bg-blue-500 border-blue-500' 
+                          : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-500'
                       }`}>
                         {selectedFormat === f.id && (
-                          <div className="w-full h-full rounded-full bg-white scale-50"></div>
+                          <div className="w-3 h-3 rounded-full bg-white"></div>
                         )}
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-800 dark:text-gray-200 text-base">{f.name}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">{f.desc}</div>
+                        <div className="font-semibold text-gray-800 dark:text-gray-100 text-base mb-1">{f.name}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 leading-snug">{f.desc}</div>
                       </div>
-                    </label>
+                    </button>
                 ))}
               </fieldset>
             </div>
 
-            <div className="space-y-2 hidden lg:block">
+            <div className="space-y-3 hidden lg:block">
               {formats.map(format => (
                 <button
                   key={format.id}
                   type="button"
                   onClick={() => setSelectedFormat(format.id)}
-                  className={`w-full text-left p-3 rounded-lg transition-all duration-200 haptic-light animate-glow-pulse ${
+                  className={`w-full text-left p-4 rounded-xl transition-all duration-200 haptic-light min-h-[64px] ${
                     selectedFormat === format.id
-                      ? 'bg-primary-100 dark:bg-primary-900 border-2 border-primary-300 dark:border-primary-700'
-                      : 'bg-gray-50 dark:bg-navy-700 hover:bg-gray-100 dark:hover:bg-navy-600 border-2 border-transparent'
+                      ? 'bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-500 shadow-md'
+                      : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600'
                   }`}
+                  style={{ touchAction: 'manipulation' }}
                 >
-                  <div className="font-medium text-gray-800 dark:text-gray-200">
+                  <div className="font-semibold text-gray-800 dark:text-gray-100 text-base">
                     {format.name}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-snug">
                     {format.desc}
                   </div>
                 </button>
@@ -336,16 +323,16 @@ ${numberSets.map((numbers, index) =>
           {/* 미리보기 */}
           <div className="lg:w-2/3 p-4 sm:p-6 animate-float flex flex-col overflow-hidden">
             <div className="flex items-center justify-between mb-4 flex-shrink-0">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-sm sm:text-base">
-                미리보기
+              <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base sm:text-lg">
+                📝 미리보기
               </h3>
-              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              <div className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">
                 {getFormattedText(selectedFormat).length}자
               </div>
             </div>
             
-            <div className="bg-gray-50 dark:bg-navy-900 rounded-xl p-3 sm:p-4 flex-1 overflow-auto animate-number-appear mb-4">
-              <pre className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl p-4 sm:p-5 flex-1 overflow-auto animate-number-appear mb-4 shadow-inner">
+              <pre className="text-sm sm:text-base text-gray-800 dark:text-gray-100 whitespace-pre-wrap font-mono leading-relaxed select-all">
                 {getFormattedText(selectedFormat)}
               </pre>
             </div>
@@ -369,29 +356,29 @@ ${numberSets.map((numbers, index) =>
                 <button
                   onClick={handleCopy}
                   disabled={copied}
-                  className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-200 haptic-light animate-glow-pulse min-h-[48px] text-base ${
+                  className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all duration-300 haptic-light min-h-[52px] text-base flex items-center justify-center ${
                     copied
-                      ? 'bg-green-500 text-white'
-                      : 'btn-primary hover:shadow-lg transform hover:-translate-y-0.5'
+                      ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg scale-105'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white hover:shadow-lg hover:scale-105 active:scale-95'
                   }`}
                   style={{ touchAction: 'manipulation' }}
                 >
                   {copied ? (
-                    <>
-                      <span className="mr-2">✅</span>
-                      복사 완료!
-                    </>
+                    <div className="flex items-center animate-bounce">
+                      <span className="mr-2 text-xl">✅</span>
+                      <span>복사 완료!</span>
+                    </div>
                   ) : (
-                    <>
-                      <span className="mr-2">📋</span>
-                      클립보드에 복사
-                    </>
+                    <div className="flex items-center">
+                      <span className="mr-2 text-lg">📋</span>
+                      <span>클립보드에 복사</span>
+                    </div>
                   )}
                 </button>
                 
                 <button
                   onClick={onClose}
-                  className="btn-secondary py-4 px-6 haptic-light animate-glow-pulse min-h-[48px] text-base sm:flex-shrink-0"
+                  className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 py-4 px-6 haptic-light min-h-[52px] text-base font-semibold rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 sm:flex-shrink-0"
                   style={{ touchAction: 'manipulation' }}
                 >
                   취소

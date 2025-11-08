@@ -1,17 +1,26 @@
 import { memo } from 'react';
+import AdBanner from './AdBanner';
 
 interface MainViewProps {
   onNavigateToGenerate: () => void;
   onNavigateToHistory: () => void;
+  onPreloadGenerate?: () => void;
+  onPreloadHistory?: () => void;
+  onPreloadSettings?: () => void;
 }
 
 export const MainView: React.FC<MainViewProps> = memo(({ 
   onNavigateToGenerate, 
-  onNavigateToHistory 
+  onNavigateToHistory,
+  onPreloadGenerate,
+  onPreloadHistory
 }) => {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="glass-card w-full max-w-md mx-auto p-8 text-center premium-float">
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6">
+      {/* 광고 배너 (상단) */}
+      <AdBanner position="top" isPremium={false} onUpgrade={() => {}} />
+      
+      <div className="glass-card w-full max-w-md mx-auto p-6 sm:p-8 text-center premium-float">
         {/* 프리미엄 헤더 */}
         <div className="mb-8">
           <div className="w-16 h-16 mx-auto mb-4 card-gradient rounded-2xl flex items-center justify-center premium-glow" style={{
@@ -19,7 +28,7 @@ export const MainView: React.FC<MainViewProps> = memo(({
           }}>
             <span className="text-2xl">🎲</span>
           </div>
-          <h1 className="text-3xl font-bold text-hero-gradient mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-hero-gradient mb-2">
             프리미엄 로또 생성기
           </h1>
         </div>
@@ -62,19 +71,25 @@ export const MainView: React.FC<MainViewProps> = memo(({
         </div>
 
         {/* 메인 액션 버튼들 */}
-        <div className="space-y-4 mb-8">
+        <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
           <button 
-            className="btn-premium-main w-full flex items-center justify-center gap-3 premium-glow"
+            className="btn-premium-main w-full flex items-center justify-center gap-3 premium-glow h-12 sm:h-14 text-base sm:text-lg"
             onClick={onNavigateToGenerate}
+            onMouseEnter={onPreloadGenerate}
+            onFocus={onPreloadGenerate}
+            aria-label="로또 번호 생성하기"
           >
-            <span className="text-xl">💎</span>
+            <span className="text-xl sm:text-2xl" aria-hidden="true">💎</span>
             번호 생성
           </button>
           <button 
-            className="btn-premium-secondary w-full flex items-center justify-center gap-3"
+            className="btn-premium-secondary w-full flex items-center justify-center gap-3 h-12 sm:h-14 text-base sm:text-lg"
             onClick={onNavigateToHistory}
+            onMouseEnter={onPreloadHistory}
+            onFocus={onPreloadHistory}
+            aria-label="생성 히스토리 보기"
           >
-            <span className="text-xl">📚</span>
+            <span className="text-xl sm:text-2xl" aria-hidden="true">📚</span>
             히스토리
           </button>
         </div>
@@ -89,7 +104,18 @@ export const MainView: React.FC<MainViewProps> = memo(({
             <div className="dice-dot" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
           </div>
         </div>
+        
+        {/* 프리미엄 업그레이드 CTA */}
+        <div className="mt-6 text-center">
+          <button className="btn-premium-main px-6 py-3 flex items-center justify-center gap-2 mx-auto">
+            <span>👑</span>
+            프리미엄 업그레이드
+          </button>
+        </div>
       </div>
+      
+      {/* 광고 배너 (하단) */}
+      <AdBanner position="bottom" isPremium={false} onUpgrade={() => {}} />
     </div>
   );
 });

@@ -78,33 +78,36 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
         <div className="premium-particle" style={{top: '30%', left: '80%', width: 8, height: 8, animationDelay: '6s'}}></div>
         <div className="premium-particle" style={{top: '80%', left: '40%', width: 12, height: 12, animationDelay: '1.5s'}}></div>
       </div>
-      <div className="flex items-center justify-between animate-float mb-2 px-1 sm:px-2">
-        <h3 className="rich-title flex items-center gap-2">
-          <span>생성 옵션</span>
-          <span className="rich-gold ml-2 animate-pulse">PREMIUM</span>
-        </h3>
-        <span className="rich-gold text-xs font-semibold">고급 필터 & 맞춤 설정</span>
+            <div className="flex items-center justify-between animate-float mb-3 px-1 sm:px-2">
+        <h3 className="text-lg sm:text-xl font-bold text-gradient">생성 옵션</h3>
+        <button
+          onClick={clearAll}
+          className="text-sm sm:text-base text-red-500 hover:text-red-600 underline haptic-light animate-glow-pulse min-h-[44px] px-2 flex items-center"
+          style={{ touchAction: 'manipulation' }}
+        >
+          전체 초기화
+        </button>
       </div>
 
       {/* 번호 고정/제외 모드 선택 */}
-      <div className="flex flex-wrap gap-2 mb-4 justify-center">
+      <div className="flex flex-wrap gap-3 mb-4 justify-center">
         <button
-          className={`rich-btn text-xs sm:text-sm px-3 py-2 min-w-[80px] ${mode === 'fixed' ? 'ring-2 ring-gold-400' : ''}`}
+          className={`rich-btn text-sm sm:text-base px-5 py-4 min-w-[100px] min-h-[52px] ${mode === 'fixed' ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => setMode(mode === 'fixed' ? 'none' : 'fixed')}
           style={{ touchAction: 'manipulation' }}
         >
           번호 고정
         </button>
         <button
-          className={`rich-btn text-xs sm:text-sm px-3 py-2 min-w-[80px] ${mode === 'excluded' ? 'ring-2 ring-gold-400' : ''}`}
+          className={`rich-btn text-sm sm:text-base px-5 py-4 min-w-[100px] min-h-[52px] ${mode === 'excluded' ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => setMode(mode === 'excluded' ? 'none' : 'excluded')}
           style={{ touchAction: 'manipulation' }}
         >
           번호 제외
         </button>
         <button
-          className="rich-btn text-xs sm:text-sm px-3 py-2 min-w-[80px]"
-          onClick={clearAll}
+          className={`rich-btn text-sm sm:text-base px-5 py-4 min-w-[100px] min-h-[52px] ${mode === 'none' ? 'ring-2 ring-gold-400' : ''}`}
+          onClick={() => setMode('none')}
           style={{ touchAction: 'manipulation' }}
         >
           전체 초기화
@@ -112,72 +115,58 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
       </div>
 
       {/* 프리미엄 고급 옵션 카드 */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 w-full">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-5 sm:mb-6 w-full">
         <button
-          className={`rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[80px] sm:min-h-[100px] ${options.avoidConsecutive ? 'ring-2 ring-gold-400' : ''}`}
+          className={`rich-btn flex flex-col items-center justify-center p-4 text-center min-h-[96px] sm:min-h-[108px] ${options.avoidConsecutive ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => handleToggle('avoidConsecutive')}
           style={{ touchAction: 'manipulation' }}
         >
-          <span className="font-bold text-xs sm:text-sm leading-tight">연속번호</span>
-          <span className="font-bold text-xs sm:text-sm leading-tight">방지</span>
-          <span className="block text-xs text-gold-500 mt-1 leading-tight">연속된 번호</span>
-          <span className="block text-xs text-gold-500 leading-tight">조합 제외</span>
+          <span className="font-bold text-sm sm:text-base leading-tight">연속번호</span>
+          <span className="font-bold text-sm sm:text-base leading-tight">방지</span>
+          <span className="block text-xs sm:text-sm text-gold-500 mt-1 leading-tight">연속된 번호</span>
+          <span className="block text-xs sm:text-sm text-gold-500 leading-tight">조합 제외</span>
         </button>
         <button
-          className={`rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[80px] sm:min-h-[100px] ${options.avoidSameEnding ? 'ring-2 ring-gold-400' : ''}`}
+          className={`rich-btn flex flex-col items-center justify-center p-4 text-center min-h-[96px] sm:min-h-[108px] ${options.avoidSameEnding ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => handleToggle('avoidSameEnding')}
           style={{ touchAction: 'manipulation' }}
         >
-          <span className="font-bold text-xs sm:text-sm leading-tight">같은 끝자리</span>
-          <span className="font-bold text-xs sm:text-sm leading-tight">방지</span>
-          <span className="block text-xs text-gold-500 mt-1 leading-tight">동일 일의 자리</span>
-          <span className="block text-xs text-gold-500 leading-tight">번호 제외</span>
+          <span className="font-bold text-sm sm:text-base leading-tight">같은 끝자리</span>
+          <span className="font-bold text-sm sm:text-base leading-tight">방지</span>
+          <span className="block text-xs sm:text-sm text-gold-500 mt-1 leading-tight">동일 일의 자리</span>
+          <span className="block text-xs sm:text-sm text-gold-500 leading-tight">번호 제외</span>
         </button>
         <button
-          className={`rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[80px] sm:min-h-[100px] ${options.oddEvenBalance ? 'ring-2 ring-gold-400' : ''}`}
+          className={`rich-btn flex flex-col items-center justify-center p-4 text-center min-h-[96px] sm:min-h-[108px] ${options.oddEvenBalance ? 'ring-2 ring-gold-400' : ''}`}
           onClick={() => handleToggle('oddEvenBalance')}
           style={{ touchAction: 'manipulation' }}
         >
-          <span className="font-bold text-xs sm:text-sm leading-tight">홀짝</span>
-          <span className="font-bold text-xs sm:text-sm leading-tight">균형</span>
+          <span className="font-bold text-sm sm:text-base leading-tight">홀짝</span>
+          <span className="font-bold text-sm sm:text-base leading-tight">균형</span>
           <span className="block text-xs text-gold-500 mt-1 leading-tight">홀수/짝수</span>
           <span className="block text-xs text-gold-500 leading-tight">개수 균형</span>
         </button>
-        <div className="rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[80px] sm:min-h-[100px]">
+        <div className="rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[88px] sm:min-h-[100px]">
           <div className="font-bold text-xs sm:text-sm mb-2">합계 범위</div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center justify-center gap-2 w-full">
             <input
               type="number"
-              className="text-xs text-center w-12 h-6 px-1 font-bold bg-gray-800 text-yellow-400 border border-yellow-400 rounded"
               min={21}
               max={255}
               value={options.sumRange?.min || 21}
               onChange={e => handleSumRangeChange('min', e.target.value)}
-              style={{ touchAction: 'manipulation' }}
+              className="w-14 h-8 text-xs text-center font-bold bg-gray-800 text-yellow-400 border border-yellow-400 rounded focus:outline-none focus:ring-1 focus:ring-yellow-400"
+              style={{ fontSize: '16px' }}
             />
-            <span className="text-yellow-300 text-xs font-bold">~</span>
+            <span className="text-yellow-300 text-sm font-bold">~</span>
             <input
               type="number"
-              className="text-[11px] sm:text-xs text-center px-0.5 font-bold"
               min={21}
               max={255}
               value={options.sumRange?.max || 255}
               onChange={e => handleSumRangeChange('max', e.target.value)}
-              style={{
-                minWidth: 32,
-                maxWidth: 38,
-                width: '100%',
-                background: '#232526',
-                color: '#ffd700',
-                border: '1.5px solid #ffd700',
-                borderRadius: '7px',
-                boxShadow: '0 1px 4px 0 rgba(212,175,55,0.10)',
-                marginLeft: 0,
-                marginRight: 0,
-                boxSizing: 'border-box',
-                textAlign: 'center',
-                touchAction: 'manipulation'
-              }}
+              className="w-14 h-8 text-xs text-center font-bold bg-gray-800 text-yellow-400 border border-yellow-400 rounded focus:outline-none focus:ring-1 focus:ring-yellow-400"
+              style={{ fontSize: '16px' }}
             />
           </div>
           <span className="block text-2xs sm:text-xs text-gold-500 mt-0.5 mb-0 pb-0">번호 합계 제한</span>

@@ -70,6 +70,7 @@ export interface NumberBallProps {
   isAnimating?: boolean;
   onClick?: (number: number) => void;
   className?: string;
+  style?: 'circle' | 'square' | 'diamond';
 }
 
 export interface GeneratorOptionsProps {
@@ -139,9 +140,13 @@ export interface ValidationResult {
 
 // 설정 타입
 export interface AppSettings {
-  theme: Theme;
-  language: 'ko' | 'en';
+  theme: 'light' | 'dark' | 'auto';
+  animations: boolean;
+  sound: boolean;
   notifications: boolean;
   autoSave: boolean;
+  language: 'ko' | 'en';
   defaultGenerationMethod: GenerationMethod;
+  numberDisplayStyle: 'circle' | 'square' | 'diamond';
+  colorScheme: 'default' | 'neon' | 'classic' | 'minimal';
 }

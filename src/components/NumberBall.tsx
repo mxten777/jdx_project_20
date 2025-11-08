@@ -9,7 +9,8 @@ const NumberBall: React.FC<NumberBallProps> = ({
   isFixed = false,
   isAnimating = false,
   onClick,
-  className = ''
+  className = '',
+  style = 'circle'
 }) => {
   const colorClass = getNumberColorClass(number);
   
@@ -32,19 +33,30 @@ const NumberBall: React.FC<NumberBallProps> = ({
     return '';
   };
 
+  const getShapeClass = () => {
+    switch (style) {
+      case 'square':
+        return 'rounded-lg';
+      case 'diamond':
+        return 'rounded-lg transform rotate-45 [&>span]:transform [&>span]:-rotate-45';
+      default:
+        return 'rounded-full';
+    }
+  };
 
   return (
     <div
       className={`
         relative
         number-ball
-        w-9 h-9 sm:w-11 sm:h-11
+        w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12
         flex items-center justify-center
         font-mono
         ${colorClass}
         ${getStatusClass()}
+        ${getShapeClass()}
         ${isAnimating ? 'animate-number-flip' : ''}
-        ${onClick ? 'cursor-pointer hover:scale-110 sm:hover:scale-125 active:scale-95 transition-transform duration-200' : ''}
+        ${onClick ? 'cursor-pointer hover:scale-110 sm:hover:scale-125 active:scale-95 transition-transform duration-200 touch-manipulation' : ''}
         ${className}
         select-none
         shadow-glow

@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { SettingsProvider } from './components/SettingsProvider'
 
 // PWA 서비스 워커 등록
 if ('serviceWorker' in navigator) {
@@ -18,6 +19,8 @@ if ('serviceWorker' in navigator) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <SettingsProvider>
+      <App />
+    </SettingsProvider>
   </StrictMode>,
 )
