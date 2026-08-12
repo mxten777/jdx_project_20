@@ -49,7 +49,7 @@ ${numberSets.map((numbers, index) =>
   `🎯 ${(index + 1).toString().padStart(2, '0')}게임 ➤ ${numbers.map(n => n.toString().padStart(2, '0')).join(' - ')}`
 ).join('\n')}
 
-💎 총 ${totalSets}게임 | 🎪 AI 기반 스마트 생성
+💎 총 ${totalSets}게임 | 🎪 스마트 생성
 🔥 프리미엄 로또 번호 생성기에서 생성됨
 💰 행운을 빕니다! 🍀
 

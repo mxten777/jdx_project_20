@@ -6,7 +6,9 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
   options,
   onOptionsChange
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const [mode, setMode] = useState<'none' | 'fixed' | 'excluded'>('none');
+  const [showNumbers, setShowNumbers] = useState(false);
   const allNumbers = Array.from({ length: 45 }, (_, i) => i + 1);
 
   const handleNumberClick = (number: number) => {
@@ -65,154 +67,190 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
     setMode('none');
   };
 
+  const hasOptions =
+    options.fixedNumbers.length > 0 ||
+    options.excludedNumbers.length > 0 ||
+    options.avoidConsecutive ||
+    options.avoidSameEnding ||
+    options.oddEvenBalance ||
+    !!options.sumRange;
+
+  const toggleOptions = [
+    { key: 'avoidConsecutive' as const, label: '연속번호 방지' },
+    { key: 'avoidSameEnding' as const, label: '같은 끝자리 방지' },
+    { key: 'oddEvenBalance' as const, label: '홀짝 균형' },
+  ];
+
   return (
-    <div
-      className="relative rich-card animate-number-appear max-w-xl mx-auto w-full sm:w-auto flex flex-col items-center"
-      style={{ minWidth: 0, boxSizing: 'border-box', padding: '1.2rem 0.5rem', minHeight: 'auto' }}
-    >
-      {/* 프리미엄 noise/particle 오버레이 */}
-      <div className="premium-noise"></div>
-      <div className="premium-particles">
-        <div className="premium-particle" style={{top: '10%', left: '20%', width: 16, height: 16, animationDelay: '0s'}}></div>
-        <div className="premium-particle" style={{top: '60%', left: '70%', width: 10, height: 10, animationDelay: '3s'}}></div>
-        <div className="premium-particle" style={{top: '30%', left: '80%', width: 8, height: 8, animationDelay: '6s'}}></div>
-        <div className="premium-particle" style={{top: '80%', left: '40%', width: 12, height: 12, animationDelay: '1.5s'}}></div>
-      </div>
-            <div className="flex items-center justify-between animate-float mb-3 px-1 sm:px-2">
-        <h3 className="text-lg sm:text-xl font-bold text-gradient">생성 옵션</h3>
-        <button
-          onClick={clearAll}
-          className="text-sm sm:text-base text-red-500 hover:text-red-600 underline haptic-light animate-glow-pulse min-h-[44px] px-2 flex items-center"
-          style={{ touchAction: 'manipulation' }}
-        >
-          전체 초기화
-        </button>
-      </div>
+    <div className="divide-y divide-gray-100 dark:divide-gray-700">
+      {/* 헤더 */}
+      <button
+        className="w-full flex items-center justify-between px-4 py-3"
+        onClick={() => setIsExpanded(prev => !prev)}
+        style={{ touchAction: 'manipulation' }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">고급 옵션</span>
+          {hasOptions && (
+            <span className="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full">
+              설정됨
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {hasOptions && isExpanded && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={e => { e.stopPropagation(); clearAll(); }}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); clearAll(); } }}
+              className="text-xs text-red-500 hover:text-red-600 font-medium px-2 py-1"
+            >
+              초기화
+            </span>
+          )}
+          <svg
+            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
 
-      {/* 번호 고정/제외 모드 선택 */}
-      <div className="flex flex-wrap gap-3 mb-4 justify-center">
-        <button
-          className={`rich-btn text-sm sm:text-base px-5 py-4 min-w-[100px] min-h-[52px] ${mode === 'fixed' ? 'ring-2 ring-gold-400' : ''}`}
-          onClick={() => setMode(mode === 'fixed' ? 'none' : 'fixed')}
-          style={{ touchAction: 'manipulation' }}
-        >
-          번호 고정
-        </button>
-        <button
-          className={`rich-btn text-sm sm:text-base px-5 py-4 min-w-[100px] min-h-[52px] ${mode === 'excluded' ? 'ring-2 ring-gold-400' : ''}`}
-          onClick={() => setMode(mode === 'excluded' ? 'none' : 'excluded')}
-          style={{ touchAction: 'manipulation' }}
-        >
-          번호 제외
-        </button>
-        <button
-          className={`rich-btn text-sm sm:text-base px-5 py-4 min-w-[100px] min-h-[52px] ${mode === 'none' ? 'ring-2 ring-gold-400' : ''}`}
-          onClick={() => setMode('none')}
-          style={{ touchAction: 'manipulation' }}
-        >
-          전체 초기화
-        </button>
-      </div>
+      {isExpanded && <>
+      {/* 토글 옵션들 */}
+      <div className="px-4 py-2">
+        {toggleOptions.map(({ key, label }) => (
+          <button
+            key={key}
+            className="w-full flex items-center justify-between py-3 border-b border-gray-50 dark:border-gray-700 last:border-0"
+            onClick={() => handleToggle(key)}
+            style={{ touchAction: 'manipulation' }}
+          >
+            <span className="text-sm text-gray-700 dark:text-gray-200">{label}</span>
+            <div className={`w-10 h-5 rounded-full transition-colors duration-200 flex items-center px-0.5 shrink-0 ${
+              options[key] ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-600'
+            }`}>
+              <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                options[key] ? 'translate-x-5' : 'translate-x-0'
+              }`} />
+            </div>
+          </button>
+        ))}
 
-      {/* 프리미엄 고급 옵션 카드 */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-5 sm:mb-6 w-full">
-        <button
-          className={`rich-btn flex flex-col items-center justify-center p-4 text-center min-h-[96px] sm:min-h-[108px] ${options.avoidConsecutive ? 'ring-2 ring-gold-400' : ''}`}
-          onClick={() => handleToggle('avoidConsecutive')}
-          style={{ touchAction: 'manipulation' }}
-        >
-          <span className="font-bold text-sm sm:text-base leading-tight">연속번호</span>
-          <span className="font-bold text-sm sm:text-base leading-tight">방지</span>
-          <span className="block text-xs sm:text-sm text-gold-500 mt-1 leading-tight">연속된 번호</span>
-          <span className="block text-xs sm:text-sm text-gold-500 leading-tight">조합 제외</span>
-        </button>
-        <button
-          className={`rich-btn flex flex-col items-center justify-center p-4 text-center min-h-[96px] sm:min-h-[108px] ${options.avoidSameEnding ? 'ring-2 ring-gold-400' : ''}`}
-          onClick={() => handleToggle('avoidSameEnding')}
-          style={{ touchAction: 'manipulation' }}
-        >
-          <span className="font-bold text-sm sm:text-base leading-tight">같은 끝자리</span>
-          <span className="font-bold text-sm sm:text-base leading-tight">방지</span>
-          <span className="block text-xs sm:text-sm text-gold-500 mt-1 leading-tight">동일 일의 자리</span>
-          <span className="block text-xs sm:text-sm text-gold-500 leading-tight">번호 제외</span>
-        </button>
-        <button
-          className={`rich-btn flex flex-col items-center justify-center p-4 text-center min-h-[96px] sm:min-h-[108px] ${options.oddEvenBalance ? 'ring-2 ring-gold-400' : ''}`}
-          onClick={() => handleToggle('oddEvenBalance')}
-          style={{ touchAction: 'manipulation' }}
-        >
-          <span className="font-bold text-sm sm:text-base leading-tight">홀짝</span>
-          <span className="font-bold text-sm sm:text-base leading-tight">균형</span>
-          <span className="block text-xs text-gold-500 mt-1 leading-tight">홀수/짝수</span>
-          <span className="block text-xs text-gold-500 leading-tight">개수 균형</span>
-        </button>
-        <div className="rich-btn flex flex-col items-center justify-center p-3 text-center min-h-[88px] sm:min-h-[100px]">
-          <div className="font-bold text-xs sm:text-sm mb-2">합계 범위</div>
-          <div className="flex items-center justify-center gap-2 w-full">
+        {/* 합계 범위 */}
+        <div className="flex items-center justify-between py-3">
+          <span className="text-sm text-gray-700 dark:text-gray-200">합계 범위</span>
+          <div className="flex items-center gap-1.5">
             <input
               type="number"
               min={21}
               max={255}
               value={options.sumRange?.min || 21}
               onChange={e => handleSumRangeChange('min', e.target.value)}
-              className="w-14 h-8 text-xs text-center font-bold bg-gray-800 text-yellow-400 border border-yellow-400 rounded focus:outline-none focus:ring-1 focus:ring-yellow-400"
-              style={{ fontSize: '16px' }}
+              className="w-14 h-7 text-center text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              style={{ fontSize: '14px' }}
             />
-            <span className="text-yellow-300 text-sm font-bold">~</span>
+            <span className="text-gray-400 text-xs">~</span>
             <input
               type="number"
               min={21}
               max={255}
               value={options.sumRange?.max || 255}
               onChange={e => handleSumRangeChange('max', e.target.value)}
-              className="w-14 h-8 text-xs text-center font-bold bg-gray-800 text-yellow-400 border border-yellow-400 rounded focus:outline-none focus:ring-1 focus:ring-yellow-400"
-              style={{ fontSize: '16px' }}
+              className="w-14 h-7 text-center text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              style={{ fontSize: '14px' }}
             />
           </div>
-          <span className="block text-2xs sm:text-xs text-gold-500 mt-0.5 mb-0 pb-0">번호 합계 제한</span>
         </div>
       </div>
 
-      {/* 번호 선택 영역 */}
-      <div
-        className="grid grid-cols-9 gap-1 sm:gap-2 mb-3 sm:mb-4 px-2 sm:px-3 py-3 mx-auto justify-items-center place-items-center w-full"
-        style={{ 
-          fontSize: '12.5px', 
-          maxWidth: '100%', 
-          overflowX: 'visible', 
-          overflowY: 'visible',
-          minHeight: '220px',
-          boxSizing: 'border-box',
-          paddingBottom: '24px'
-        }}
-      >
-        {allNumbers.map((number) => (
-          <NumberBall
-            key={number}
-            number={number}
-            isSelected={options.fixedNumbers.includes(number)}
-            isExcluded={options.excludedNumbers.includes(number)}
-            isFixed={mode === 'fixed' && options.fixedNumbers.includes(number)}
-            onClick={() => handleNumberClick(number)}
-            className={
-              [
-                'rounded-full font-bold transition-all duration-150',
-                'border border-gray-300',
-                options.fixedNumbers.includes(number)
-                  ? 'bg-yellow-400 text-gray-900 border-yellow-500 shadow-gold'
-                  : options.excludedNumbers.includes(number)
-                  ? 'bg-gray-300 text-gray-400 line-through opacity-60'
-                  : 'bg-[#232526] text-yellow-100 hover:bg-yellow-200 hover:text-gray-900',
-                mode === 'fixed' && options.fixedNumbers.includes(number)
-                  ? 'ring-2 ring-gold-400'
-                  : mode === 'excluded' && options.excludedNumbers.includes(number)
-                  ? 'ring-2 ring-blue-400'
-                  : '',
-              ].join(' ')
-            }
-          />
-        ))}
+      {/* 번호 고정/제외 아코디언 */}
+      <div className="">
+        <button
+          className="w-full flex items-center justify-between px-4 py-3"
+          onClick={() => setShowNumbers(!showNumbers)}
+          style={{ touchAction: 'manipulation' }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">번호 고정/제외</span>
+            {(options.fixedNumbers.length > 0 || options.excludedNumbers.length > 0) && (
+              <span className="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full">
+                {options.fixedNumbers.length + options.excludedNumbers.length}개
+              </span>
+            )}
+          </div>
+          <svg
+            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${showNumbers ? 'rotate-180' : ''}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {showNumbers && (
+          <div className="px-4 pb-4">
+            {/* 모드 선택 */}
+            <div className="flex gap-2 mb-3">
+              <button
+                className={`flex-1 h-9 rounded-lg text-xs font-semibold transition-colors ${
+                  mode === 'fixed' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                }`}
+                onClick={() => setMode(mode === 'fixed' ? 'none' : 'fixed')}
+                style={{ touchAction: 'manipulation' }}
+              >
+                고정
+              </button>
+              <button
+                className={`flex-1 h-9 rounded-lg text-xs font-semibold transition-colors ${
+                  mode === 'excluded' ? 'bg-red-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                }`}
+                onClick={() => setMode(mode === 'excluded' ? 'none' : 'excluded')}
+                style={{ touchAction: 'manipulation' }}
+              >
+                제외
+              </button>
+            </div>
+
+            {/* 번호 그리드 */}
+            <div className="grid grid-cols-9 gap-1">
+              {allNumbers.map((number) => (
+                <NumberBall
+                  key={number}
+                  number={number}
+                  isSelected={options.fixedNumbers.includes(number)}
+                  isExcluded={options.excludedNumbers.includes(number)}
+                  isFixed={mode === 'fixed' && options.fixedNumbers.includes(number)}
+                  onClick={() => handleNumberClick(number)}
+                  className={[
+                    'rounded-full font-bold transition-all duration-150',
+                    options.fixedNumbers.includes(number)
+                      ? 'ring-2 ring-indigo-400'
+                      : options.excludedNumbers.includes(number)
+                      ? 'opacity-40'
+                      : '',
+                  ].join(' ')}
+                />
+              ))}
+            </div>
+
+            {/* 선택 번호 요약 */}
+            {options.fixedNumbers.length > 0 && (
+              <p className="mt-2 text-xs text-indigo-600 dark:text-indigo-400">
+                고정: {[...options.fixedNumbers].sort((a, b) => a - b).join(', ')}
+              </p>
+            )}
+            {options.excludedNumbers.length > 0 && (
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">
+                제외: {[...options.excludedNumbers].sort((a, b) => a - b).join(', ')}
+              </p>
+            )}
+          </div>
+        )}
       </div>
+      </>
+      }
     </div>
   );
 };

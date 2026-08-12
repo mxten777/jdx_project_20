@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import Dashboard from './Dashboard';
 import type { LottoResult, LottoStatistics } from '../types/lotto';
+import NumberBall from './NumberBall';
 import PersonalStatsWidget from './PersonalStatsWidget';
 
 interface HistoryViewProps {
@@ -88,116 +89,135 @@ export const HistoryView: React.FC<HistoryViewProps> = memo(({
   };
 
   return (
-    <div className="min-h-screen premium-bg p-3 sm:p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* 뒤로가기 버튼 */}
-        <button 
-          className="mb-4 sm:mb-6 btn-premium-secondary flex items-center gap-2 h-10 sm:h-12 px-4 sm:px-6"
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* 상단 헤더 */}
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 h-14 flex items-center gap-3">
+        <button
           onClick={onNavigateBack}
+          className="p-2 -ml-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          style={{ touchAction: 'manipulation' }}
           aria-label="메인 페이지로 돌아가기"
         >
-          <span aria-hidden="true">←</span> 메인으로
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
         </button>
-        {/* 프리미엄 히스토리 관리 도구 */}
-        <div className="glass-card p-3 sm:p-4 mb-4 sm:mb-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 mb-4">
-            {/* 검색 입력 */}
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="번호나 생성방식으로 검색..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-gold-400"
-              />
-            </div>
-            
-            {/* 필터 드롭다운 */}
-            <select
-              value={filterMethod}
-              onChange={(e) => setFilterMethod(e.target.value)}
-              className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold-400"
-            >
-              <option value="all">모든 방식</option>
-              <option value="random">완전 랜덤</option>
-              <option value="balanced">균형 생성</option>
-              <option value="statistics">통계 기반</option>
-              <option value="custom">커스텀</option>
-              <option value="ai">AI 추천</option>
-            </select>
-            
-            {/* 정렬 드롭다운 */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'date' | 'method' | 'sum')}
-              className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold-400"
-            >
-              <option value="date">날짜순</option>
-              <option value="method">생성방식순</option>
-              <option value="sum">합계순</option>
-            </select>
-            
-            {/* 내보내기 버튼 */}
-            <button
-              onClick={exportHistoryData}
-              className="btn-premium-secondary flex items-center gap-2 px-4 py-2"
-            >
-              📁 내보내기
-            </button>
-          </div>
-          
-          {/* 필터링된 결과 개수 */}
-          <div className="text-sm text-white/70 mb-4">
-            총 {results.length}개 중 {filteredAndSortedResults.length}개 표시
-          </div>
-        </div>
+        <h2 className="font-semibold text-gray-900 dark:text-white">히스토리</h2>
+      </div>
 
-        {/* 개인화 통계 위젯 */}
-        <PersonalStatsWidget 
-          totalGenerated={results.length}
-          favoritesCount={favoritesCount}
-          recentResults={recentResults}
-        />
-        
-        {/* 필터링된 히스토리 결과 */}
-        <div className="glass-card p-4 mb-6">
-          <h3 className="text-lg font-bold text-white mb-4">🎲 생성 히스토리</h3>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+      {results.length === 0 ? (
+        /* 빈 상태 */
+        <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+          <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center">
+            <svg className="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">아직 생성한 번호가 없습니다</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">번호를 생성하면 여기에 기록됩니다</p>
+          <button
+            onClick={onNavigateBack}
+            className="h-10 px-6 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors"
+            style={{ touchAction: 'manipulation' }}
+          >
+            번호 생성하기
+          </button>
+        </div>
+      ) : (
+        /* 데이터 있을 때 */
+        <div className="max-w-lg mx-auto px-4 py-4 space-y-3">
+          {/* 검색/필터/정렬 */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 space-y-2">
+            <input
+              type="text"
+              placeholder="번호나 생성방식으로 검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-9 px-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <div className="flex gap-2">
+              <select
+                value={filterMethod}
+                onChange={(e) => setFilterMethod(e.target.value)}
+                className="flex-1 h-9 px-2 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="all">모든 방식</option>
+                <option value="random">완전 랜덤</option>
+                <option value="balanced">균형 생성</option>
+                <option value="statistics">통계 기반</option>
+                <option value="custom">커스텀</option>
+                <option value="ai">스마트 추천</option>
+              </select>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'date' | 'method' | 'sum')}
+                className="flex-1 h-9 px-2 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="date">날짜순</option>
+                <option value="method">방식순</option>
+                <option value="sum">합계순</option>
+              </select>
+              <button
+                onClick={exportHistoryData}
+                className="h-9 px-3 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors whitespace-nowrap"
+                style={{ touchAction: 'manipulation' }}
+              >
+                내보내기
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              총 {results.length}개 중 {filteredAndSortedResults.length}개
+            </p>
+          </div>
+
+          {/* 활동 통계 */}
+          <PersonalStatsWidget
+            totalGenerated={results.length}
+            favoritesCount={favoritesCount}
+            recentResults={recentResults}
+          />
+
+          {/* 생성 히스토리 목록 */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">생성 히스토리</h3>
+            </div>
             {filteredAndSortedResults.length === 0 ? (
-              <div className="text-center text-white/50 py-8">
+              <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                 검색 조건에 맞는 결과가 없습니다.
               </div>
             ) : (
-              filteredAndSortedResults.map((result) => (
-                <div key={result.id} className="bg-white/5 rounded-lg p-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex gap-1">
-                      {result.numbers.map((num, i) => (
-                        <span key={i} className="inline-block w-8 h-8 rounded-full bg-gold-400 text-black text-xs font-bold text-center leading-8">
-                          {num}
-                        </span>
-                      ))}
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {filteredAndSortedResults.map((result) => (
+                  <div key={result.id} className="px-4 py-2.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex gap-0.5 shrink-0">
+                        {result.numbers.map((num, i) => (
+                          <NumberBall key={i} number={num} />
+                        ))}
+                      </div>
                     </div>
-                    <div className="text-sm text-white/70">
-                      합계: {result.numbers.reduce((acc, num) => acc + num, 0)}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-semibold text-gold-400">{result.method}</div>
-                    <div className="text-xs text-white/50">
-                      {result.generatedAt.toLocaleDateString('ko-KR')}
+                    <div className="text-right shrink-0">
+                      <div className="text-xs font-medium text-indigo-600 dark:text-indigo-400">{result.method}</div>
+                      <div className="text-xs text-gray-400 dark:text-gray-500">
+                        합 {result.numbers.reduce((a, n) => a + n, 0)} · {result.generatedAt.toLocaleDateString('ko-KR')}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
             )}
           </div>
+
+          {/* 당첨 결과 + 통계 차트 */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">당첨 결과 및 통계</h3>
+            </div>
+            <Dashboard results={results} statistics={finalStatistics} />
+          </div>
         </div>
-        
-        <div className="glass-card p-6">
-          <Dashboard results={results} statistics={finalStatistics} />
-        </div>
-      </div>
+      )}
     </div>
   );
 });

@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 import ResultDisplay from './ResultDisplay';
 import GeneratorOptions from './GeneratorOptions';
 import type { GenerationMethod, GenerationOptions } from '../types/lotto';
@@ -16,6 +16,14 @@ interface GenerateViewProps {
   setGenerateCount: (count: number) => void;
 }
 
+const METHOD_BUTTONS: { method: GenerationMethod; label: string; span?: boolean }[] = [
+  { method: 'random', label: '완전 랜덤' },
+  { method: 'balanced', label: '균형 생성' },
+  { method: 'statistics', label: '통계 기반' },
+  { method: 'custom', label: '커스텀' },
+  { method: 'ai', label: '스마트 추천', span: true },
+];
+
 export const GenerateView: React.FC<GenerateViewProps> = memo(({
   options,
   currentNumbers,
@@ -26,97 +34,80 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
   appState,
   setGenerateCount
 }) => {
-  // 메모이제이션된 핸들러들
-  const handleRandomGenerate = useCallback(() => onGenerate('random'), [onGenerate]);
-  const handleBalancedGenerate = useCallback(() => onGenerate('balanced'), [onGenerate]);
-  const handleStatisticsGenerate = useCallback(() => onGenerate('statistics'), [onGenerate]);
-  const handleCustomGenerate = useCallback(() => onGenerate('custom'), [onGenerate]);
-  const handleAIGenerate = useCallback(() => onGenerate('ai'), [onGenerate]);
-
-  // 조합 개수 선택 버튼
   const counts = [1, 3, 5, 10];
 
   return (
-    <div className="min-h-screen p-4 pt-8">
-      <div className="max-w-4xl mx-auto">
-        {/* 뒤로가기 버튼 */}
-        <button 
-          className="mb-6 btn-premium-secondary flex items-center gap-2 text-sm sm:text-base min-h-[48px] px-4 py-3"
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* 상단 헤더 */}
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 h-14 flex items-center gap-3">
+        <button
           onClick={onNavigateBack}
+          className="p-2 -ml-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           style={{ touchAction: 'manipulation' }}
+          aria-label="뒤로가기"
         >
-          <span>←</span> 메인으로
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
         </button>
+        <h2 className="font-semibold text-gray-900 dark:text-white">번호 생성</h2>
+      </div>
 
-        {/* 조합 개수 선택 */}
-        <div className="flex flex-wrap gap-2 mb-6 justify-center">
-          {counts.map((count) => (
-            <button
-              key={count}
-              className={`btn-premium-main text-sm sm:text-base px-4 py-3 rounded-full min-w-[80px] min-h-[48px] ${appState.generateCount === count ? 'ring-2 ring-white ring-opacity-50' : ''}`}
-              onClick={() => setGenerateCount(count)}
-              disabled={isGenerating}
-              style={{ touchAction: 'manipulation' }}
-            >
-              {count}개
-            </button>
-          ))}
+      <div className="max-w-lg mx-auto px-4 py-4 space-y-3">
+        {/* 조합 개수 */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">조합 개수</p>
+          <div className="flex gap-2">
+            {counts.map((count) => (
+              <button
+                key={count}
+                className={`flex-1 h-10 rounded-lg text-sm font-semibold transition-colors duration-150 ${
+                  appState.generateCount === count
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+                onClick={() => setGenerateCount(count)}
+                disabled={isGenerating}
+                style={{ touchAction: 'manipulation' }}
+              >
+                {count}개
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          <div className="glass-card p-4 sm:p-6">
-            <GeneratorOptions options={options} onOptionsChange={onOptionsChange} />
+        {/* 생성 방식 */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">생성 방식</p>
+          <div className="grid grid-cols-2 gap-2">
+            {METHOD_BUTTONS.map(({ method, label, span }) => (
+              <button
+                key={method}
+                className={`h-12 rounded-lg text-sm font-semibold transition-colors duration-150 ${span ? 'col-span-2' : ''} ${
+                  method === 'ai'
+                    ? 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+                onClick={() => onGenerate(method)}
+                disabled={isGenerating}
+                style={{ touchAction: 'manipulation' }}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-          <div className="glass-card p-4 sm:p-6">
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <button 
-                className="btn-generate text-xs sm:text-sm py-4 sm:py-4 min-h-[56px] sm:min-h-[64px]" 
-                onClick={handleRandomGenerate}
-                disabled={isGenerating}
-                style={{ touchAction: 'manipulation' }}
-              >
-                <span className="block">완전</span>
-                <span className="block">랜덤</span>
-              </button>
-              <button 
-                className="btn-generate text-xs sm:text-sm py-4 sm:py-4 min-h-[56px] sm:min-h-[64px]" 
-                onClick={handleBalancedGenerate}
-                disabled={isGenerating}
-                style={{ touchAction: 'manipulation' }}
-              >
-                <span className="block">균형</span>
-                <span className="block">생성</span>
-              </button>
-              <button 
-                className="btn-generate text-xs sm:text-sm py-4 sm:py-4 min-h-[56px] sm:min-h-[64px]" 
-                onClick={handleStatisticsGenerate}
-                disabled={isGenerating}
-                style={{ touchAction: 'manipulation' }}
-              >
-                <span className="block">통계</span>
-                <span className="block">기반</span>
-              </button>
-              <button 
-                className="btn-generate text-xs sm:text-sm py-4 sm:py-4 min-h-[56px] sm:min-h-[64px]" 
-                onClick={handleCustomGenerate}
-                disabled={isGenerating}
-                style={{ touchAction: 'manipulation' }}
-              >
-                <span className="block">커스텀</span>
-                <span className="block">생성</span>
-              </button>
-              <button 
-                className="btn-generate text-xs sm:text-sm py-4 sm:py-4 min-h-[56px] sm:min-h-[64px] bg-gradient-to-r from-violet-500 to-emerald-400 premium-glow" 
-                onClick={handleAIGenerate}
-                disabled={isGenerating}
-                style={{ touchAction: 'manipulation' }}
-              >
-                <span className="block">AI</span>
-                <span className="block">추천</span>
-              </button>
-            </div>
+        </div>
+
+        {/* 결과 표시 */}
+        {currentNumbers.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
             <ResultDisplay numberSets={currentNumbers} isAnimating={isGenerating} />
           </div>
+        )}
+
+        {/* 고급 옵션 */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <GeneratorOptions options={options} onOptionsChange={onOptionsChange} />
         </div>
       </div>
     </div>

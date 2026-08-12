@@ -129,24 +129,7 @@ const App = memo(() => {
   ]);
 
   return (
-    <div className="min-h-screen relative premium-bg overflow-hidden">
-      {/* 프리미엄 입체감/노이즈/파티클 오버레이 */}
-      <div className="premium-noise"></div>
-      <div className="premium-particles">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="premium-particle"
-            style={{
-              top: `${Math.random() * 80 + 10}%`,
-              left: `${Math.random() * 80 + 10}%`,
-              width: `${Math.random() * 24 + 12}px`,
-              height: `${Math.random() * 24 + 12}px`,
-              animationDelay: `${Math.random() * 8}s`
-            }}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen relative bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
       <UpdateBanner 
         isVisible={showUpdateBanner}
         onReload={handleReload}
@@ -156,11 +139,11 @@ const App = memo(() => {
         onToggle={toggleDarkMode}
       />
       
-      {/* 설정 버튼 */}
+      {/* 설정 버튼 - 메인 화면에서만 표시 */}
+      {currentView === 'main' && (
       <button
         onClick={() => setShowSettings(true)}
-
-        className="fixed top-4 left-4 z-40 p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-white/70 hover:text-white hover:bg-white/20 transition-all duration-300 shadow-lg"
+        className="fixed top-3.5 left-4 z-40 p-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shadow-sm"
         aria-label="설정"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,6 +151,7 @@ const App = memo(() => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       </button>
+      )}
 
       <ToastContainer 
         toasts={toasts}

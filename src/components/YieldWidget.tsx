@@ -41,34 +41,34 @@ const YieldWidget: React.FC<YieldWidgetProps> = ({ matchResults }) => {
   const yieldRate = totalSpent === 0 ? 0 : ((totalPrize - totalSpent) / totalSpent) * 100;
 
   return (
-    <div className="card-premium p-4 mb-6 animate-fade-in">
-      <h3 className="text-lg font-bold mb-3 text-gradient">💰 수익률 시뮬레이션</h3>
-      <div className="flex flex-wrap gap-4 mb-4">
-        <div className="flex-1 min-w-[120px] bg-white/10 rounded-xl p-3 text-center">
-          <div className="text-2xl font-bold text-neon-400">{totalGames}</div>
-          <div className="text-xs text-white/70 mt-1">구매 게임수</div>
+    <div>
+      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">수익률 시뮬레이션</p>
+      <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex-1 min-w-[90px] bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2.5 text-center">
+          <div className="text-lg font-bold text-indigo-600 dark:text-indigo-400">{totalGames}</div>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">구매 게임수</div>
         </div>
-        <div className="flex-1 min-w-[120px] bg-white/10 rounded-xl p-3 text-center">
-          <div className="text-2xl font-bold text-gold-400">{totalSpent.toLocaleString()}원</div>
-          <div className="text-xs text-white/70 mt-1">총 투자금</div>
+        <div className="flex-1 min-w-[90px] bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2.5 text-center">
+          <div className="text-lg font-bold text-amber-500 dark:text-amber-400">{totalSpent.toLocaleString()}원</div>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">총 투자금</div>
         </div>
-        <div className="flex-1 min-w-[120px] bg-white/10 rounded-xl p-3 text-center">
-          <div className="text-2xl font-bold text-green-400">{totalPrize.toLocaleString()}원</div>
-          <div className="text-xs text-white/70 mt-1">총 당첨금</div>
+        <div className="flex-1 min-w-[90px] bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2.5 text-center">
+          <div className="text-lg font-bold text-emerald-500 dark:text-emerald-400">{totalPrize.toLocaleString()}원</div>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">총 당첨금</div>
         </div>
-        <div className="flex-1 min-w-[120px] bg-white/10 rounded-xl p-3 text-center">
-          <div className={`text-2xl font-bold ${yieldRate >= 0 ? 'text-green-400' : 'text-red-400'}`}>{yieldRate.toFixed(1)}%</div>
-          <div className="text-xs text-white/70 mt-1">수익률</div>
+        <div className="flex-1 min-w-[90px] bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2.5 text-center">
+          <div className={`text-lg font-bold ${yieldRate >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>{yieldRate.toFixed(1)}%</div>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">수익률</div>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2 text-xs text-white/80">
+      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
         <span>1등: {rankCounts[1]}회</span>
         <span>2등: {rankCounts[2]}회</span>
         <span>3등: {rankCounts[3]}회</span>
         <span>4등: {rankCounts[4]}회</span>
         <span>5등: {rankCounts[5]}회</span>
       </div>
-      <p className="mt-3 text-xs text-white/60">* 실제 당첨금은 회차별로 다를 수 있습니다.</p>
+      <p className="mt-2 text-[10px] text-gray-400 dark:text-gray-500">* 실제 당첨금은 회차별로 다를 수 있습니다.</p>
     </div>
   );
 };
