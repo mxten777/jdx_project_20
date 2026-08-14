@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import ResultDisplay from './ResultDisplay';
 import GeneratorOptions from './GeneratorOptions';
 import type { GenerationMethod, GenerationOptions } from '../types/lotto';
@@ -12,6 +12,7 @@ interface GenerateViewProps {
   onOptionsChange: (options: GenerationOptions) => void;
   onGenerate: (method: GenerationMethod) => void;
   onNavigateBack: () => void;
+  onNavigateToHistory?: () => void;
   appState: AppState;
   setGenerateCount: (count: number) => void;
 }
@@ -31,10 +32,12 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
   onOptionsChange,
   onGenerate,
   onNavigateBack,
+  onNavigateToHistory,
   appState,
   setGenerateCount
 }) => {
   const counts = [1, 3, 5, 10];
+  const [selectedMethod, setSelectedMethod] = useState<GenerationMethod>('ai');
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -84,11 +87,11 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
               <button
                 key={method}
                 className={`h-12 rounded-lg text-sm font-semibold transition-colors duration-150 ${span ? 'col-span-2' : ''} ${
-                  method === 'ai'
+                  method === selectedMethod
                     ? 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
-                onClick={() => onGenerate(method)}
+                onClick={() => { setSelectedMethod(method); onGenerate(method); }}
                 disabled={isGenerating}
                 style={{ touchAction: 'manipulation' }}
               >
@@ -101,7 +104,7 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
         {/* 결과 표시 */}
         {currentNumbers.length > 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-            <ResultDisplay numberSets={currentNumbers} isAnimating={isGenerating} />
+            <ResultDisplay numberSets={currentNumbers} isAnimating={isGenerating} onNavigateToHistory={onNavigateToHistory} />
           </div>
         )}
 

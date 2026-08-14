@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   generateRandomNumbers,
   generateBalancedNumbers,
@@ -46,6 +46,12 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
   const [showUpdateBanner, setShowUpdateBanner] = useState(false);
   const [currentView, setCurrentView] = useState<'main' | 'generate' | 'history'>('main');
 
+  // 콜백과 최신 히스토리를 ref로 유지 — handleGenerate 재생성 없이 항상 최신값 참조
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+  const historyResultsRef = useRef(appState.history.results);
+  historyResultsRef.current = appState.history.results;
+
   // SW 업데이트 감지
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -65,7 +71,7 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
     setAppState(prev => ({ ...prev, isGenerating: true }));
     try {
       const numbers = await retry(async () => {
-  const result: number[][] = [];
+        const result: number[][] = [];
         const count = appState.generateCount || 1;
         for (let i = 0; i < count; i++) {
           switch (method) {
@@ -82,7 +88,7 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
               result.push(generateCustomNumbers(appState.options));
               break;
             case 'ai':
-              result.push(generateAINumbers(appState.options, appState.statistics || defaultStats, appState.history.results));
+              result.push(generateAINumbers(appState.options, appState.statistics || defaultStats, historyResultsRef.current));
               break;
             default:
               result.push(generateRandomNumbers());
@@ -106,21 +112,21 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
       }));
       // 성공 메시지 표시
       const methodNames: Partial<Record<GenerationMethod, string>> = {
-  random: '완전 랜덤',
-  balanced: '균형 생성',
-  statistics: '통계 기반',
-  custom: '커스텀 생성',
-  ai: 'AI 추천'
+        random: '완전 랜덤',
+        balanced: '균형 생성',
+        statistics: '통계 기반',
+        custom: '커스텀 생성',
+        ai: 'AI 추천'
       };
-      options?.onSuccess?.(`${methodNames[method] || '번호'} ${appState.generateCount}개 생성 완료!`);
+      optionsRef.current?.onSuccess?.(`${methodNames[method] || '번호'} ${appState.generateCount}개 생성 완료!`);
     } catch (error) {
       console.error('번호 생성 중 오류:', error);
       const errorMessage = error instanceof Error ? error.message : '번호 생성 중 오류가 발생했습니다.';
-      options?.onError?.(errorMessage);
+      optionsRef.current?.onError?.(errorMessage);
     } finally {
       setAppState(prev => ({ ...prev, isGenerating: false }));
     }
-  }, [appState.options, appState.statistics, appState.generateCount, appState.history.results, options]);
+  }, [appState.options, appState.statistics, appState.generateCount]);
   // 조합 개수 변경 핸들러
   const setGenerateCount = useCallback((count: number) => {
     setAppState(prev => ({ ...prev, generateCount: count }));

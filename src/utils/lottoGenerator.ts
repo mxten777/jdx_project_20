@@ -135,9 +135,11 @@ export function generateCustomNumbers(options: GenerationOptions): number[] {
     availableNumbers.splice(randomIndex, 1);
   }
   
-  // 홀짝 균형 조정
+  // 홀짝 균형 조정 (전체 가용 풀을 재구성해서 교체 후보를 확보)
   if (oddEvenBalance && selectedNumbers.length === 6) {
-    selectedNumbers = adjustOddEvenBalance(selectedNumbers, availableNumbers, excludedNumbers);
+    const balancePool = Array.from({ length: 45 }, (_, i) => i + 1)
+      .filter(num => !excludedNumbers.includes(num) && !selectedNumbers.includes(num));
+    selectedNumbers = adjustOddEvenBalance(selectedNumbers, balancePool, excludedNumbers);
   }
   
   // 합계 범위 조정
@@ -259,42 +261,42 @@ function hasSameEnding(numbers: number[]): boolean {
 }
 
 /**
- * 홀짝 균형 조정
+ * 홀짝 균형 조정 (|홀-짝| <= 1 이 될 때까지 반복 교체)
  */
 function adjustOddEvenBalance(
   numbers: number[], 
   availableNumbers: number[], 
   excludedNumbers: number[]
 ): number[] {
-  const oddCount = numbers.filter(num => num % 2 === 1).length;
-  const evenCount = numbers.filter(num => num % 2 === 0).length;
-  
-  // 이미 균형이 맞다면 그대로 반환
-  if (Math.abs(oddCount - evenCount) <= 1) {
-    return numbers;
-  }
-  
-  // 균형 조정이 필요한 경우
-  const needMoreOdd = oddCount < evenCount;
-  const targetNumbers = availableNumbers.filter(num => 
-    !excludedNumbers.includes(num) && 
-    (needMoreOdd ? num % 2 === 1 : num % 2 === 0)
-  );
-  
-  if (targetNumbers.length > 0) {
-    // 가장 불균형한 번호를 교체
-    const numbersToReplace = numbers.filter(num => 
+  const result = [...numbers];
+
+  for (let iter = 0; iter < 6; iter++) {
+    const oddCount = result.filter(num => num % 2 === 1).length;
+    const evenCount = result.filter(num => num % 2 === 0).length;
+
+    if (Math.abs(oddCount - evenCount) <= 1) break;
+
+    const needMoreOdd = oddCount < evenCount;
+    const candidates = availableNumbers.filter(num =>
+      !excludedNumbers.includes(num) &&
+      !result.includes(num) &&
+      (needMoreOdd ? num % 2 === 1 : num % 2 === 0)
+    );
+
+    if (candidates.length === 0) break;
+
+    const numbersToReplace = result.filter(num =>
       needMoreOdd ? num % 2 === 0 : num % 2 === 1
     );
-    
-    if (numbersToReplace.length > 0) {
-      const replaceIndex = numbers.indexOf(numbersToReplace[0]);
-      const replacement = targetNumbers[Math.floor(Math.random() * targetNumbers.length)];
-      numbers[replaceIndex] = replacement;
-    }
+
+    if (numbersToReplace.length === 0) break;
+
+    const replaceIndex = result.indexOf(numbersToReplace[0]);
+    const replacement = candidates[Math.floor(Math.random() * candidates.length)];
+    result[replaceIndex] = replacement;
   }
-  
-  return numbers;
+
+  return result;
 }
 
 /**

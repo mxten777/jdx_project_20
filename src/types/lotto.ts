@@ -84,6 +84,7 @@ export interface ResultDisplayProps {
   onCopy?: () => void;
   onSave?: () => void;
   onShare?: () => void;
+  onNavigateToHistory?: () => void;
 }
 
 export interface HistoryItem extends LottoResult {

@@ -11,6 +11,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   isAnimating,
   onCopy,
   onSave,
+  onNavigateToHistory,
 }) => {
   const [showStats, setShowStats] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -179,6 +180,17 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
           </button>
         )}
       </div>
+
+      {/* 히스토리 보기 버튼 */}
+      {onNavigateToHistory && (
+        <button
+          onClick={onNavigateToHistory}
+          className="w-full h-11 flex items-center justify-center gap-1.5 text-xs font-semibold rounded-lg border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+          style={{ touchAction: 'manipulation' }}
+        >
+          📋 히스토리 보기
+        </button>
+      )}
 
       <CopyFormatModal
         numberSets={numberSets}

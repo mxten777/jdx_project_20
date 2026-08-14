@@ -90,6 +90,7 @@ const App = memo(() => {
               onOptionsChange={handleOptionsChange}
               onGenerate={handleGenerate}
               onNavigateBack={handleNavigateBack}
+              onNavigateToHistory={handleNavigateToHistory}
               appState={appState}
               setGenerateCount={setGenerateCount}
             />

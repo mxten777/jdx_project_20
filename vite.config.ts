@@ -83,7 +83,14 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    host: true
+    host: true,
+    proxy: {
+      '/api/lotto': {
+        target: 'https://www.dhlottery.co.kr',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/lotto/, '/lt645/selectPstLt645InfoNew.do'),
+      },
+    },
   },
   preview: {
     port: 4173,
