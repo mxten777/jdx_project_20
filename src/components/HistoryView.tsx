@@ -1,8 +1,18 @@
 import React, { memo, useMemo } from 'react';
 import Dashboard from './Dashboard';
 import type { LottoResult, LottoStatistics } from '../types/lotto';
-import NumberBall from './NumberBall';
+import { getNumberColorClass } from '../utils/lottoGenerator';
 import PersonalStatsWidget from './PersonalStatsWidget';
+
+const METHOD_LABELS: Record<string, string> = {
+  random: '랜덤',
+  balanced: '균형',
+  statistics: '통계',
+  custom: '커스텀',
+  ai: '스마트',
+  recommend: '추천',
+};
+const getMethodLabel = (method: string): string => METHOD_LABELS[method] ?? method;
 
 interface HistoryViewProps {
   results: LottoResult[];
@@ -19,6 +29,7 @@ export const HistoryView: React.FC<HistoryViewProps> = memo(({
   const [searchTerm, setSearchTerm] = React.useState('');
   const [filterMethod, setFilterMethod] = React.useState<string>('all');
   const [sortBy, setSortBy] = React.useState<'date' | 'method' | 'sum'>('date');
+  const [isStatsOpen, setIsStatsOpen] = React.useState(false);
 
 
   // statistics가 null인 경우 기본값 제공 (메모이제이션)
@@ -43,7 +54,8 @@ export const HistoryView: React.FC<HistoryViewProps> = memo(({
       // 검색어 필터
       const searchMatch = searchTerm === '' || 
         result.numbers.some(num => num.toString().includes(searchTerm)) ||
-        result.method.toLowerCase().includes(searchTerm.toLowerCase());
+        result.method.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (METHOD_LABELS[result.method] ?? '').includes(searchTerm);
       
       // 생성 방식 필터
       const methodMatch = filterMethod === 'all' || result.method === filterMethod;
@@ -124,34 +136,34 @@ export const HistoryView: React.FC<HistoryViewProps> = memo(({
           </button>
         </div>
       ) : (
-        /* 데이터 있을 때 */
-        <div className="max-w-lg mx-auto px-4 py-4 space-y-3">
-          {/* 검색/필터/정렬 */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 space-y-2">
+        <div className="max-w-2xl mx-auto px-4 py-3 space-y-3">
+          {/* 검색/필터 — compact, no card wrapper */}
+          <div className="space-y-1.5">
             <input
               type="text"
               placeholder="번호나 생성방식으로 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-9 px-3 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full h-9 px-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <select
                 value={filterMethod}
                 onChange={(e) => setFilterMethod(e.target.value)}
-                className="flex-1 h-9 px-2 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 h-8 px-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="all">모든 방식</option>
-                <option value="random">완전 랜덤</option>
-                <option value="balanced">균형 생성</option>
-                <option value="statistics">통계 기반</option>
+                <option value="random">랜덤</option>
+                <option value="balanced">균형</option>
+                <option value="statistics">통계</option>
                 <option value="custom">커스텀</option>
-                <option value="ai">스마트 추천</option>
+                <option value="ai">스마트</option>
+                <option value="recommend">추천</option>
               </select>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'date' | 'method' | 'sum')}
-                className="flex-1 h-9 px-2 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 h-8 px-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="date">날짜순</option>
                 <option value="method">방식순</option>
@@ -159,47 +171,43 @@ export const HistoryView: React.FC<HistoryViewProps> = memo(({
               </select>
               <button
                 onClick={exportHistoryData}
-                className="h-9 px-3 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors whitespace-nowrap"
+                className="h-8 px-3 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors whitespace-nowrap shrink-0"
                 style={{ touchAction: 'manipulation' }}
               >
                 내보내기
               </button>
+              <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0 tabular-nums whitespace-nowrap">
+                {filteredAndSortedResults.length}/{results.length}
+              </span>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              총 {results.length}개 중 {filteredAndSortedResults.length}개
-            </p>
           </div>
 
-          {/* 활동 통계 */}
-          <PersonalStatsWidget
-            totalGenerated={results.length}
-            favoritesCount={favoritesCount}
-            recentResults={recentResults}
-          />
-
-          {/* 생성 히스토리 목록 */}
+          {/* 생성 기록 — 메인 콘텐츠 */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">생성 히스토리</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">생성 기록</h3>
             </div>
             {filteredAndSortedResults.length === 0 ? (
-              <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+              <div className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
                 검색 조건에 맞는 결과가 없습니다.
               </div>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredAndSortedResults.map((result) => (
-                  <div key={result.id} className="px-4 py-2.5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="flex gap-0.5 shrink-0">
-                        {result.numbers.map((num, i) => (
-                          <NumberBall key={i} number={num} />
-                        ))}
-                      </div>
+                  <div key={result.id} className="px-3 py-2.5 flex items-center gap-2">
+                    <div className="flex gap-1 shrink-0">
+                      {result.numbers.map((num, i) => (
+                        <span
+                          key={i}
+                          className={`inline-flex items-center justify-center w-7 h-7 rounded-full ${getNumberColorClass(num)} text-[11px] font-bold leading-none select-none`}
+                        >
+                          {num}
+                        </span>
+                      ))}
                     </div>
-                    <div className="text-right shrink-0">
-                      <div className="text-xs font-medium text-indigo-600 dark:text-indigo-400">{result.method}</div>
-                      <div className="text-xs text-gray-400 dark:text-gray-500">
+                    <div className="ml-auto text-right shrink-0">
+                      <div className="text-xs font-medium text-gray-600 dark:text-gray-300">{getMethodLabel(result.method)}</div>
+                      <div className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
                         합 {result.numbers.reduce((a, n) => a + n, 0)} · {result.generatedAt.toLocaleDateString('ko-KR')}
                       </div>
                     </div>
@@ -209,12 +217,30 @@ export const HistoryView: React.FC<HistoryViewProps> = memo(({
             )}
           </div>
 
-          {/* 당첨 결과 + 통계 차트 */}
+          {/* 활동 통계 + 최근 트렌드 */}
+          <PersonalStatsWidget
+            totalGenerated={results.length}
+            favoritesCount={favoritesCount}
+            recentResults={recentResults}
+          />
+
+          {/* 상세 통계 — 기본 접힘 accordion */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">당첨 결과 및 통계</h3>
-            </div>
-            <Dashboard results={results} statistics={finalStatistics} />
+            <button
+              onClick={() => setIsStatsOpen(prev => !prev)}
+              className="w-full px-4 py-2.5 flex items-center justify-between text-left"
+              style={{ touchAction: 'manipulation' }}
+              aria-expanded={isStatsOpen}
+            >
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">상세 통계 보기</h3>
+              <svg
+                className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 ${isStatsOpen ? 'rotate-180' : ''}`}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {isStatsOpen && <Dashboard results={results} statistics={finalStatistics} />}
           </div>
         </div>
       )}

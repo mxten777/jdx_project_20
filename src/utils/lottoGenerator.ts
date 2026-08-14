@@ -101,7 +101,7 @@ export function generateRandomNumbers(): number[] {
 /**
  * 조건부 로또 번호 생성
  */
-export function generateCustomNumbers(options: GenerationOptions): number[] {
+export function generateCustomNumbers(options: GenerationOptions, _depth = 0): number[] {
   const { fixedNumbers, excludedNumbers, avoidConsecutive, avoidSameEnding, oddEvenBalance, sumRange } = options;
   
   let availableNumbers = Array.from({ length: 45 }, (_, i) => i + 1)
@@ -142,11 +142,12 @@ export function generateCustomNumbers(options: GenerationOptions): number[] {
     selectedNumbers = adjustOddEvenBalance(selectedNumbers, balancePool, excludedNumbers);
   }
   
-  // 합계 범위 조정
+  // 합계 범위 조정 (최대 50회 재시도 후 포기)
   if (sumRange && selectedNumbers.length === 6) {
     const sum = selectedNumbers.reduce((acc, num) => acc + num, 0);
     if (sum < sumRange.min || sum > sumRange.max) {
-      return generateCustomNumbers(options); // 재시도
+      if (_depth >= 50) return selectedNumbers.sort((a, b) => a - b);
+      return generateCustomNumbers(options, _depth + 1);
     }
   }
   

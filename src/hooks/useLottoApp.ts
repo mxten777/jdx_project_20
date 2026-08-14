@@ -5,6 +5,7 @@ import {
   generateStatisticalNumbers,
   generateCustomNumbers,
   generateAINumbers,
+  generateRecommendedNumbers,
   createLottoResult
 } from '../utils/lottoGenerator';
 import { retry } from '../utils/retry';
@@ -44,7 +45,7 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
   });
 
   const [showUpdateBanner, setShowUpdateBanner] = useState(false);
-  const [currentView, setCurrentView] = useState<'main' | 'generate' | 'history'>('main');
+  const [currentView, setCurrentView] = useState<'main' | 'generate' | 'history'>('generate');
 
   // 콜백과 최신 히스토리를 ref로 유지 — handleGenerate 재생성 없이 항상 최신값 참조
   const optionsRef = useRef(options);
@@ -89,6 +90,9 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
               break;
             case 'ai':
               result.push(generateAINumbers(appState.options, appState.statistics || defaultStats, historyResultsRef.current));
+              break;
+            case 'recommend':
+              result.push(generateRecommendedNumbers(appState.options, appState.statistics || defaultStats, historyResultsRef.current));
               break;
             default:
               result.push(generateRandomNumbers());

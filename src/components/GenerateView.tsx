@@ -91,7 +91,7 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
                     ? 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
-                onClick={() => { setSelectedMethod(method); onGenerate(method); }}
+                onClick={() => setSelectedMethod(method)}
                 disabled={isGenerating}
                 style={{ touchAction: 'manipulation' }}
               >
@@ -100,6 +100,17 @@ export const GenerateView: React.FC<GenerateViewProps> = memo(({
             ))}
           </div>
         </div>
+
+        {/* 번호 생성 CTA */}
+        <button
+          className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-xl shadow-sm transition-colors duration-150 disabled:opacity-60"
+          onClick={() => onGenerate(selectedMethod)}
+          disabled={isGenerating}
+          style={{ touchAction: 'manipulation' }}
+          aria-label="번호 생성"
+        >
+          {isGenerating ? '생성 중...' : '번호 생성'}
+        </button>
 
         {/* 결과 표시 */}
         {currentNumbers.length > 0 && (

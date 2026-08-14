@@ -49,7 +49,7 @@ const NumberBall: React.FC<NumberBallProps> = ({
       className={`
         relative
         number-ball
-        w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12
+        w-12 h-12 md:w-14 md:h-14
         flex items-center justify-center
         font-mono
         ${colorClass}
@@ -73,7 +73,7 @@ const NumberBall: React.FC<NumberBallProps> = ({
       }}
       aria-label={`로또 번호 ${number}${isFixed ? ' (고정됨)' : ''}${isExcluded ? ' (제외됨)' : ''}`}
     >
-      <span className="font-bold text-base sm:text-lg leading-none font-mono will-change-transform w-full text-center">
+      <span className="font-bold text-base sm:text-lg leading-none font-mono tabular-nums will-change-transform w-full text-center">
         {number}
       </span>
       

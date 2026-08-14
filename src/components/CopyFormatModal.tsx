@@ -20,8 +20,6 @@ const CopyFormatModal: React.FC<CopyFormatModalProps> = ({
   const [manualCopyText, setManualCopyText] = useState('');
   const [copyEvent, setCopyEvent] = useState<string>('');
 
-  console.log('CopyFormatModal render - isOpen:', isOpen);
-
   if (!isOpen) return null;
 
   const formatDate = () => {
@@ -265,7 +263,6 @@ ${numberSets.map((numbers, index) =>
                       key={f.id}
                       type="button"
                       onClick={() => {
-                        console.log('button onClick', f.id);
                         setSelectedFormat(f.id);
                       }}
                       className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none min-h-[72px] text-left ${

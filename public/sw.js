@@ -1,5 +1,5 @@
 // Enhanced service worker with intelligent caching strategies
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const STATIC_CACHE = `static-cache-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `runtime-cache-${CACHE_VERSION}`;
 const API_CACHE = `api-cache-${CACHE_VERSION}`;

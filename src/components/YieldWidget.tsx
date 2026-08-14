@@ -57,7 +57,7 @@ const YieldWidget: React.FC<YieldWidgetProps> = ({ matchResults }) => {
           <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">총 당첨금</div>
         </div>
         <div className="flex-1 min-w-[90px] bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2.5 text-center">
-          <div className={`text-lg font-bold ${yieldRate >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>{yieldRate.toFixed(1)}%</div>
+          <div className={`text-base font-bold ${yieldRate >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>{yieldRate.toFixed(1)}%</div>
           <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">수익률</div>
         </div>
       </div>

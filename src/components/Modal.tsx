@@ -10,8 +10,6 @@ export default function Modal({ open, onClose, children }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const scrollYRef = useRef(0);
 
-  console.log('Modal render - open:', open);
-
   useEffect(() => {
     if (!open) return;
     const handleEscape = (e: KeyboardEvent) => {
