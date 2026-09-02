@@ -59,7 +59,7 @@ const NumberBall: React.FC<NumberBallProps> = ({
         ${onClick ? 'cursor-pointer hover:scale-110 sm:hover:scale-125 active:scale-95 transition-transform duration-200 touch-manipulation' : ''}
         ${className}
         select-none
-        shadow-glow
+        shadow-glow signature-number-ball
       `}
       style={{ perspective: '600px' }}
       onClick={handleClick}

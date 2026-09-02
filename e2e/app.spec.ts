@@ -10,8 +10,8 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
     await expect(page).toHaveTitle(/로또/);
 
     // 앱은 Generate 화면으로 진입한다 (currentView 기본값 = 'generate')
-    await expect(page.getByText('LOTTO 6/45')).toBeVisible();
-    await expect(page.getByRole('button', { name: '번호 생성하기' })).toBeVisible();
+    await expect(page.getByText('MY LOTTO')).toBeVisible();
+    await expect(page.getByRole('button', { name: '행운의 번호 만들기' })).toBeVisible();
     await expect(page.getByRole('button', { name: '뒤로가기' })).toBeVisible();
 
     // 다크 모드 토글 확인
@@ -26,8 +26,8 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
     // 랜덤 방식은 기본 선택 상태
     await expect(page.getByRole('button', { name: '랜덤', exact: true })).toBeVisible();
 
-    // 번호 생성하기
-    await page.getByRole('button', { name: '번호 생성하기' }).click();
+    // 행운의 번호 만들기
+    await page.getByRole('button', { name: '행운의 번호 만들기' }).click();
 
     // 정상적으로 6개의 번호가 생성되었는지 확인
     const numberBalls = resultRegion.locator('[aria-label^="로또 번호"]');
@@ -38,11 +38,11 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
     // 통계 기반 방식 선택
     await page.getByRole('button', { name: '통계 기반' }).click();
 
-    // 실제 역대 당첨 데이터 기반 안내 문구 확인
-    await expect(page.getByText('실제 역대 당첨 데이터 기반')).toBeVisible();
+    // 실제 데이터 기반 안내 문구 확인
+    await expect(page.getByText(/실제 당첨 데이터 분석/)).toBeVisible();
 
-    // 번호 생성하기
-    await page.getByRole('button', { name: '번호 생성하기' }).click();
+    // 행운의 번호 만들기
+    await page.getByRole('button', { name: '행운의 번호 만들기' }).click();
 
     const resultRegion = page.locator('[aria-live="polite"]');
     const numberBalls = resultRegion.locator('[aria-label^="로또 번호"]');
@@ -100,7 +100,7 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
     await page.setViewportSize({ width: 375, height: 667 });
 
     // Generate 화면의 핵심 요소가 모바일에서도 보이는지 확인
-    const generateButton = page.getByRole('button', { name: '번호 생성하기' });
+    const generateButton = page.getByRole('button', { name: '행운의 번호 만들기' });
     await expect(generateButton).toBeVisible();
 
     // 터치 친화적 크기 확인 (최소 44px)
@@ -120,7 +120,7 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
     await expect(page.getByRole('button', { name: '뒤로가기' })).toBeFocused();
 
     await page.keyboard.press('Tab');
-    await expect(page.getByRole('button', { name: '번호 생성하기' })).toBeFocused();
+    await expect(page.getByRole('button', { name: '행운의 번호 만들기' })).toBeFocused();
 
     // Enter 키로 번호 생성 활성화
     await page.keyboard.press('Enter');
@@ -138,8 +138,8 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
     expect(loadTime).toBeLessThan(3000);
 
     // 기본 접근성 속성 확인
-    const generateButton = page.getByRole('button', { name: '번호 생성하기' });
-    await expect(generateButton).toHaveAttribute('aria-label', '번호 생성하기');
+    const generateButton = page.getByRole('button', { name: '행운의 번호 만들기' });
+    await expect(generateButton).toHaveAttribute('aria-label', '행운의 번호 만들기');
     await expect(page.getByRole('button', { name: '뒤로가기' })).toHaveAttribute('aria-label', '뒤로가기');
 
     // 색상 대비 확인을 위한 스타일 검증
@@ -159,7 +159,7 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
   test('오프라인 모드 기본 동작', async ({ page, context }) => {
     // 온라인에서 페이지 로드
     await page.goto('/');
-    await expect(page.getByRole('button', { name: '번호 생성하기' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '행운의 번호 만들기' })).toBeVisible();
 
     // 오프라인 모드로 전환
     await context.setOffline(true);

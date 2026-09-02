@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ResultDisplayProps } from '../types/lotto';
 import NumberBall from './NumberBall';
 import CopyFormatModal from './CopyFormatModal';
@@ -46,6 +46,19 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   const [selectedSet, setSelectedSet] = useState(0);
   const [showCopyModal, setShowCopyModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+  const previousNumberSets = useRef(numberSets);
+
+  useEffect(() => {
+    if (previousNumberSets.current === numberSets) return;
+
+    previousNumberSets.current = numberSets;
+    if (numberSets.length === 0) return;
+
+    setShouldAnimate(true);
+    const timeoutId = window.setTimeout(() => setShouldAnimate(false), 800);
+    return () => window.clearTimeout(timeoutId);
+  }, [numberSets]);
 
   const handleShare = async () => {
     const text = `로또 번호 ${selectedSet + 1}게임: ${(numberSets[selectedSet] || []).join(', ')}\n행운을 빕니다!`;
@@ -114,12 +127,12 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
       )}
 
       {/* 메인 번호 볼 */}
-      <div className="flex justify-center items-center gap-2.5 sm:gap-3.5 py-2">
+      <div className="signature-ball-row flex justify-center items-center gap-2.5 sm:gap-3.5 py-2">
         {currentNumbers.map((number, index) => (
           <NumberBall
             key={`${number}-${index}`}
             number={number}
-            isAnimating={isAnimating}
+            isAnimating={isAnimating || shouldAnimate}
             className="!h-11 !w-11 !text-base sm:!h-14 sm:!w-14 sm:!text-lg"
           />
         ))}
