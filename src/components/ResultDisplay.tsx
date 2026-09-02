@@ -47,6 +47,8 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   const [showCopyModal, setShowCopyModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [copiedAll, setCopiedAll] = useState(false);
+  const [copiedGameIndex, setCopiedGameIndex] = useState<number | null>(null);
   const previousNumberSets = useRef(numberSets);
 
   useEffect(() => {
@@ -89,6 +91,30 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
     if (onCopy) onCopy();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const writeToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleCopyAll = async () => {
+    const text = numberSets.map((numbers, index) => `${index + 1}게임: ${numbers.join(', ')}`).join('\n');
+    if (await writeToClipboard(text)) {
+      setCopiedAll(true);
+      window.setTimeout(() => setCopiedAll(false), 1800);
+    }
+  };
+
+  const handleCopyGame = async (numbers: number[], index: number) => {
+    if (await writeToClipboard(numbers.join(', '))) {
+      setCopiedGameIndex(index);
+      window.setTimeout(() => setCopiedGameIndex(null), 1800);
+    }
   };
 
   if (numberSets.length === 0) {
@@ -138,6 +164,20 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
         ))}
       </div>
 
+      {!showActions && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="signature-copy-all"
+            onClick={handleCopyAll}
+            style={{ touchAction: 'manipulation' }}
+          >
+            <IconCopy />
+            {copiedAll ? '복사됨' : '전체 복사'}
+          </button>
+        </div>
+      )}
+
       {/* 전체 세트 미리보기 - 내부 스크롤 없이 자연 흐름 */}
       {numberSets.length > 1 && (
         <div className="border-t border-gray-100 dark:border-gray-700 pt-3 space-y-1">
@@ -159,6 +199,21 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
                   <NumberBall key={i} number={num} className="!w-8 !h-8 !text-xs" />
                 ))}
               </div>
+              {!showActions && (
+                <button
+                  type="button"
+                  className="signature-copy-game ml-auto"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    void handleCopyGame(numbers, index);
+                  }}
+                  aria-label={`${index + 1}게임 번호 복사`}
+                  title={`${index + 1}게임 번호 복사`}
+                  style={{ touchAction: 'manipulation' }}
+                >
+                  {copiedGameIndex === index ? <span className="text-[10px]">복사됨</span> : <IconCopy />}
+                </button>
+              )}
             </div>
           ))}
         </div>

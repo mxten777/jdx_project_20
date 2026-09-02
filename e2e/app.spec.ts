@@ -34,6 +34,33 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
     await expect(numberBalls).toHaveCount(6);
   });
 
+  test('여러 게임 전체 복사 시 모든 게임 번호를 클립보드에 저장', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:4173' });
+    await page.getByRole('button', { name: '3개' }).click();
+    await page.getByRole('button', { name: '행운의 번호 만들기' }).click();
+
+    await expect(page.getByRole('button', { name: '전체 복사' })).toBeVisible();
+    await page.getByRole('button', { name: '전체 복사' }).click();
+
+    const copiedText = (await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n');
+    expect(copiedText).toMatch(/^1게임: (\d{1,2}, ){5}\d{1,2}\n2게임: (\d{1,2}, ){5}\d{1,2}\n3게임: (\d{1,2}, ){5}\d{1,2}$/);
+    await expect(page.getByRole('button', { name: '복사됨' })).toBeVisible();
+  });
+
+  test('개별 게임 복사 시 선택한 게임 번호만 클립보드에 저장', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:4173' });
+    await page.getByRole('button', { name: '3개' }).click();
+    await page.getByRole('button', { name: '행운의 번호 만들기' }).click();
+
+    await page.getByRole('button', { name: '2게임', exact: true }).click();
+    const expectedNumbers = await page.locator('.signature-ball-row [aria-label^="로또 번호"]').evaluateAll(
+      (balls) => balls.map((ball) => ball.getAttribute('aria-label')?.replace('로또 번호 ', '')).join(', ')
+    );
+    await page.getByRole('button', { name: '2게임 번호 복사' }).click();
+
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(expectedNumbers);
+  });
+
   test('통계 기반 선택 시 실제 데이터 기반 안내 표시 및 생성', async ({ page }) => {
     // 통계 기반 방식 선택
     await page.getByRole('button', { name: '통계 기반' }).click();
