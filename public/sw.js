@@ -95,8 +95,9 @@ async function staleWhileRevalidate(request, cacheName) {
   const cached = await caches.match(request);
   const fetchPromise = fetch(request).then(response => {
     if (response.ok) {
-      const cache = caches.open(cacheName);
-      cache.then(c => c.put(request, response.clone()));
+      // clone before the response body can be consumed elsewhere
+      const responseToCache = response.clone();
+      caches.open(cacheName).then(c => c.put(request, responseToCache));
     }
     return response;
   }).catch(() => cached);
@@ -120,8 +121,9 @@ async function networkFirstWithSWR(request, cacheName) {
       // Background update
       fetch(request).then(response => {
         if (response.ok) {
-          const cache = caches.open(cacheName);
-          cache.then(c => c.put(request, response.clone()));
+          // clone before the response body can be consumed elsewhere
+          const responseToCache = response.clone();
+          caches.open(cacheName).then(c => c.put(request, responseToCache));
         }
       }).catch(() => {});
       return cached;
