@@ -9,6 +9,7 @@ import {
   createLottoResult
 } from '../utils/lottoGenerator';
 import { retry } from '../utils/retry';
+import { shouldShowUpdateBanner } from '../utils/serviceWorkerUpdate';
 import type { AppState, GenerationMethod, GenerationOptions } from '../types/lotto';
 
 const defaultStats = {
@@ -56,8 +57,13 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
   // SW 업데이트 감지
   useEffect(() => {
     if ('serviceWorker' in navigator) {
+      // 최초 설치(controller: none -> active)는 업데이트가 아니므로,
+      // 로드 시점에 이미 컨트롤러가 있었던 경우에만 배너를 표시한다.
+      const hadControllerAtLoad = !!navigator.serviceWorker.controller;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        setShowUpdateBanner(true);
+        if (shouldShowUpdateBanner(hadControllerAtLoad)) {
+          setShowUpdateBanner(true);
+        }
       });
     }
   }, []);
@@ -83,7 +89,7 @@ export const useLottoApp = (options?: UseLottoAppOptions) => {
               result.push(generateBalancedNumbers(appState.options));
               break;
             case 'statistics':
-              result.push(generateStatisticalNumbers(appState.statistics || defaultStats, appState.options));
+              result.push(generateStatisticalNumbers(appState.options));
               break;
             case 'custom':
               result.push(generateCustomNumbers(appState.options));

@@ -3,7 +3,6 @@ import type { ResultDisplayProps } from '../types/lotto';
 import NumberBall from './NumberBall';
 import CopyFormatModal from './CopyFormatModal';
 import QRCodeModal from './QRCodeModal';
-import { calculateNumberStatistics } from '../utils/lottoGenerator';
 
 const IconCopy = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -38,8 +37,8 @@ const IconHistory = () => (
 const ResultDisplay: React.FC<ResultDisplayProps> = ({
   numberSets,
   isAnimating,
+  showActions = true,
   onCopy,
-  onSave: _onSave,
   onNavigateToHistory,
 }) => {
   const [copied, setCopied] = useState(false);
@@ -86,10 +85,8 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   }
 
   const currentNumbers = numberSets[selectedSet] || [];
-  const stats = calculateNumberStatistics(currentNumbers);
-
   return (
-    <div className="space-y-3">
+    <div className="w-full space-y-5">
       <QRCodeModal
         value={currentNumbers.join(', ')}
         open={showQRModal}
@@ -117,36 +114,15 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
       )}
 
       {/* 메인 번호 볼 */}
-      <div className="flex justify-center items-center gap-2 sm:gap-3 py-1">
+      <div className="flex justify-center items-center gap-2.5 sm:gap-3.5 py-2">
         {currentNumbers.map((number, index) => (
           <NumberBall
             key={`${number}-${index}`}
             number={number}
             isAnimating={isAnimating}
+            className="!h-11 !w-11 !text-base sm:!h-14 sm:!w-14 sm:!text-lg"
           />
         ))}
-      </div>
-
-      {/* 번호 분포 */}
-      <div className="flex items-center justify-center gap-x-2 flex-wrap gap-y-1">
-        <span className="text-[10px] text-gray-400 dark:text-gray-500 tracking-wide">번호 분포</span>
-        {Object.entries(stats.ranges).map(([range, count]) => (
-          <span
-            key={range}
-            className={`text-xs ${count > 0 ? 'text-gray-600 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600'}`}
-          >
-            {range}<span className="mx-0.5 text-gray-300 dark:text-gray-600">·</span><span className={count > 0 ? 'font-medium' : ''}>{count}</span>
-          </span>
-        ))}
-      </div>
-
-      {/* 홀짝 + 합계/평균 */}
-      <div className="flex justify-center items-center gap-x-3 text-xs text-gray-500 dark:text-gray-400">
-        <span>홀 {stats.oddCount} · 짝 {stats.evenCount}</span>
-        <span className="text-gray-300 dark:text-gray-600">|</span>
-        <span>합 {stats.sum}</span>
-        <span className="text-gray-300 dark:text-gray-600">|</span>
-        <span>평균 {stats.average.toFixed(1)}</span>
       </div>
 
       {/* 전체 세트 미리보기 - 내부 스크롤 없이 자연 흐름 */}
@@ -175,6 +151,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
         </div>
       )}
 
+      {showActions && <>
       {/* 액션 버튼 */}
       <div className="space-y-2 pt-1 border-t border-gray-100 dark:border-gray-700">
         {/* Primary: 복사 */}
@@ -219,6 +196,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
           히스토리 보기
         </button>
       )}
+      </>}
 
       <CopyFormatModal
         numberSets={numberSets}

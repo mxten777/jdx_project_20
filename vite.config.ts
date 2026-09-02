@@ -11,6 +11,7 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     css: true,
     reporters: ['verbose'],
+    exclude: ['node_modules/**', 'e2e/**', 'dist/**'],
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [

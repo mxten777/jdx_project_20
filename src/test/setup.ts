@@ -11,15 +11,25 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+// Mock localStorage (in-memory, so getItem/setItem actually round-trip)
+const createLocalStorageMock = () => {
+  let store: Record<string, string> = {}
+  return {
+    getItem: vi.fn((key: string) => (key in store ? store[key] : null)),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = String(value)
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key]
+    }),
+    clear: vi.fn(() => {
+      store = {}
+    }),
+  }
 }
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+  value: createLocalStorageMock(),
+  writable: true
 })
 
 // Mock IntersectionObserver

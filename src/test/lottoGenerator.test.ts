@@ -1,6 +1,15 @@
 import { describe, it, expect } from 'vitest'
-import { generateRandomNumbers, generateBalancedNumbers, generateCustomNumbers, generateAINumbers } from '../utils/lottoGenerator'
-import type { GenerationOptions } from '../types/lotto'
+import {
+  generateRandomNumbers,
+  generateBalancedNumbers,
+  generateCustomNumbers,
+  generateAINumbers,
+  generateStatisticalNumbers,
+  calculateStatisticalWeights
+} from '../utils/lottoGenerator'
+import { calculateLottoStatistics } from '../utils/lottoStatistics'
+import lottoHistory from '../data/lottoHistory.json'
+import type { GenerationOptions, LottoDraw } from '../types/lotto'
 
 describe('lottoGenerator', () => {
   const defaultOptions: GenerationOptions = {
@@ -146,6 +155,58 @@ describe('lottoGenerator', () => {
       
       expect(numbers).toHaveLength(6)
       expect(new Set(numbers)).toHaveLength(6)
+    })
+  })
+
+  describe('generateStatisticalNumbers (real history-based weighted random)', () => {
+    it('should generate 6 unique numbers between 1 and 45', () => {
+      for (let i = 0; i < 20; i++) {
+        const numbers = generateStatisticalNumbers(defaultOptions)
+        expect(numbers).toHaveLength(6)
+        expect(new Set(numbers)).toHaveLength(6)
+        numbers.forEach(num => {
+          expect(num).toBeGreaterThanOrEqual(1)
+          expect(num).toBeLessThanOrEqual(45)
+        })
+      }
+    })
+
+    it('should respect fixed numbers', () => {
+      const options = { ...defaultOptions, fixedNumbers: [1, 2, 3] }
+      const numbers = generateStatisticalNumbers(options)
+      expect(numbers).toHaveLength(6)
+      expect(numbers).toEqual(expect.arrayContaining([1, 2, 3]))
+    })
+
+    it('should respect excluded numbers', () => {
+      const excludedNumbers = Array.from({ length: 39 }, (_, i) => i + 1) // 1~39 제외, 40~45만 남김
+      const options = { ...defaultOptions, excludedNumbers }
+      const numbers = generateStatisticalNumbers(options)
+      expect(numbers).toHaveLength(6)
+      numbers.forEach(num => expect(num).toBeGreaterThan(39))
+    })
+  })
+
+  describe('calculateStatisticalWeights (real history statistics)', () => {
+    const stats = calculateLottoStatistics(lottoHistory as LottoDraw[])
+    const weights = calculateStatisticalWeights(stats)
+
+    it('should generate a weight for all 45 numbers', () => {
+      expect(Object.keys(weights)).toHaveLength(45)
+    })
+
+    it('should keep all weights within the mild bias range [0.75, 1.25]', () => {
+      Object.values(weights).forEach(w => {
+        expect(w).toBeGreaterThan(0)
+        expect(w).toBeGreaterThanOrEqual(0.75)
+        expect(w).toBeLessThanOrEqual(1.25)
+      })
+    })
+
+    it('should reflect differences between the most and least frequent numbers', () => {
+      const mostFrequent = [...stats.numberStats].sort((a, b) => b.frequency - a.frequency)[0]
+      const leastFrequent = [...stats.numberStats].sort((a, b) => a.frequency - b.frequency)[0]
+      expect(weights[mostFrequent.number]).toBeGreaterThan(weights[leastFrequent.number])
     })
   })
 })

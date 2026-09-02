@@ -81,8 +81,8 @@ export interface GeneratorOptionsProps {
 export interface ResultDisplayProps {
   numberSets: number[][];  // 여러 번호 세트
   isAnimating: boolean;
+  showActions?: boolean;
   onCopy?: () => void;
-  onSave?: () => void;
   onShare?: () => void;
   onNavigateToHistory?: () => void;
 }
@@ -150,4 +150,30 @@ export interface AppSettings {
   defaultGenerationMethod: GenerationMethod;
   numberDisplayStyle: 'circle' | 'square' | 'diamond';
   colorScheme: 'default' | 'neon' | 'classic' | 'minimal';
+}
+
+// 실제 역대 당첨 데이터 관련 타입 (src/data/lottoHistory.json)
+export interface LottoDraw {
+  round: number;
+  drawDate: string;
+  numbers: number[];
+  bonus: number;
+}
+
+// 최근 구간 window 크기 (회차 수)
+export type RecentWindow = 10 | 30 | 50 | 100;
+
+export interface NumberStatistics {
+  number: number;
+  frequency: number;
+  frequencyRate: number; // frequency / totalRounds
+  lastSeenRound: number | null;
+  absenceRounds: number;
+  recentFrequency: Record<RecentWindow, number>;
+}
+
+export interface LottoHistoryStatistics {
+  totalRounds: number;
+  latestRound: number;
+  numberStats: NumberStatistics[]; // 1~45, index 0 === number 1
 }

@@ -61,9 +61,9 @@ export function generateHistoryBasedNumbers(options: GenerationOptions, history:
 /**
  * 추천 기반 번호 생성 (통계+히스토리+랜덤 가중치 혼합)
  */
-export function generateRecommendedNumbers(options: GenerationOptions, statistics: LottoStatistics, history: LottoResult[]): number[] {
+export function generateRecommendedNumbers(options: GenerationOptions, _statistics: LottoStatistics, history: LottoResult[]): number[] {
   // 통계 기반 2, 히스토리 기반 2, 랜덤 2
-  const statNums = generateStatisticalNumbers(statistics, options).slice(0, 2);
+  const statNums = generateStatisticalNumbers(options).slice(0, 2);
   const histNums = generateHistoryBasedNumbers(options, history).slice(0, 2);
   const randNums = generateRandomNumbers().filter(n => ![...statNums, ...histNums].includes(n)).slice(0, 2);
   const selectedNumbers = [...options.fixedNumbers, ...statNums, ...histNums, ...randNums]
@@ -78,9 +78,69 @@ export function generateRecommendedNumbers(options: GenerationOptions, statistic
   }
   return selectedNumbers.sort((a, b) => a - b);
 }
-import type { GenerationOptions, LottoResult, GenerationMethod, LottoStatistics } from '../types/lotto';
+import type { GenerationOptions, LottoResult, GenerationMethod, LottoStatistics, LottoDraw, LottoHistoryStatistics } from '../types/lotto';
+import lottoHistoryData from '../data/lottoHistory.json';
+import { calculateLottoStatistics } from './lottoStatistics';
 
 // 로또 번호 생성 관련 유틸리티 함수들
+
+// 통계 기반 가중치 튜닝 파라미터 (완만한 편향만 적용, 도박사의 오류 방지 목적)
+const MIN_STATISTICAL_WEIGHT = 0.75;
+const MAX_STATISTICAL_WEIGHT = 1.25;
+const FREQUENCY_INFLUENCE = 0.10; // 전체 출현 빈도 영향도 (가장 큼)
+const RECENT_INFLUENCE = 0.07; // 최근 30회 흐름 영향도
+const ABSENCE_INFLUENCE = 0.03; // 미출현 기간 영향도 (가장 작음, gambler's fallacy 방지 위해 제한)
+const RECENT_WINDOW_SIZE = 30;
+
+/** value를 [min, max] 구간 기준 [-1, 1]로 정규화 (min === max면 0) */
+function normalizeToUnitRange(value: number, min: number, max: number): number {
+  if (max === min) return 0;
+  return ((value - min) / (max - min)) * 2 - 1;
+}
+
+/**
+ * 실제 역대 통계로부터 1~45 번호별 weight를 계산한다.
+ * 전체 frequency, 최근 30회 흐름, 미출현 기간을 각각 정규화하여 소폭만 반영하고
+ * 최종 weight는 [MIN_STATISTICAL_WEIGHT, MAX_STATISTICAL_WEIGHT]로 clamp한다.
+ */
+export function calculateStatisticalWeights(stats: LottoHistoryStatistics): Record<number, number> {
+  const frequencies = stats.numberStats.map(s => s.frequency);
+  const recentFrequencies = stats.numberStats.map(s => s.recentFrequency[RECENT_WINDOW_SIZE]);
+  const absences = stats.numberStats.map(s => s.absenceRounds);
+
+  const minFreq = Math.min(...frequencies);
+  const maxFreq = Math.max(...frequencies);
+  const minRecent = Math.min(...recentFrequencies);
+  const maxRecent = Math.max(...recentFrequencies);
+  const minAbsence = Math.min(...absences);
+  const maxAbsence = Math.max(...absences);
+
+  const weights: Record<number, number> = {};
+  stats.numberStats.forEach(s => {
+    const freqAdjustment = normalizeToUnitRange(s.frequency, minFreq, maxFreq) * FREQUENCY_INFLUENCE;
+    const recentAdjustment = normalizeToUnitRange(s.recentFrequency[RECENT_WINDOW_SIZE], minRecent, maxRecent) * RECENT_INFLUENCE;
+    const absenceAdjustment = normalizeToUnitRange(s.absenceRounds, minAbsence, maxAbsence) * ABSENCE_INFLUENCE;
+    const weight = 1 + freqAdjustment + recentAdjustment + absenceAdjustment;
+    weights[s.number] = Math.min(MAX_STATISTICAL_WEIGHT, Math.max(MIN_STATISTICAL_WEIGHT, weight));
+  });
+
+  return weights;
+}
+
+// 모듈 로드 시 1회만 계산 (매 생성 클릭마다 1239회 전체를 재계산하지 않음)
+const realLottoHistoryStatistics = calculateLottoStatistics(lottoHistoryData as LottoDraw[]);
+const realStatisticalWeights = calculateStatisticalWeights(realLottoHistoryStatistics);
+
+/** weight에 비례한 확률로 candidates 중 하나를 선택 */
+function pickWeightedNumber(candidates: number[], weights: Record<number, number>): number {
+  const total = candidates.reduce((sum, n) => sum + (weights[n] ?? 1), 0);
+  let r = Math.random() * total;
+  for (const n of candidates) {
+    r -= weights[n] ?? 1;
+    if (r <= 0) return n;
+  }
+  return candidates[candidates.length - 1];
+}
 
 /**
  * 완전 랜덤 로또 번호 생성
@@ -156,34 +216,22 @@ export function generateCustomNumbers(options: GenerationOptions, _depth = 0): n
 
 /**
  * 통계 기반 번호 생성
+ * 실제 역대 당첨 데이터(lottoHistory.json)의 통계 특성을 소폭 반영한 weighted random.
+ * 특정 번호의 과거 출현 빈도가 미래 확률을 높인다고 가정하지 않으며, 편향은 완만하게 제한된다.
  */
-export function generateStatisticalNumbers(statistics: LottoStatistics, options: GenerationOptions): number[] {
-  const { hotNumbers, mostFrequent } = statistics;
+export function generateStatisticalNumbers(options: GenerationOptions): number[] {
   const { fixedNumbers, excludedNumbers } = options;
-  
-  // 핫 넘버와 빈출 번호를 우선적으로 고려
-  const priorityNumbers = [...new Set([...hotNumbers, ...mostFrequent])]
-    .filter(num => !excludedNumbers.includes(num) && !fixedNumbers.includes(num))
-    .slice(0, 10); // 상위 10개
-  
+
   const selectedNumbers = [...fixedNumbers];
-  
-  // 우선순위 번호에서 먼저 선택
-  while (selectedNumbers.length < 4 && priorityNumbers.length > 0) {
-    const randomIndex = Math.floor(Math.random() * priorityNumbers.length);
-    const number = priorityNumbers.splice(randomIndex, 1)[0];
-    selectedNumbers.push(number);
-  }
-  
-  // 나머지는 랜덤으로 채움
-  const availableNumbers = Array.from({ length: 45 }, (_, i) => i + 1)
+  let candidates = Array.from({ length: 45 }, (_, i) => i + 1)
     .filter(num => !excludedNumbers.includes(num) && !selectedNumbers.includes(num));
-  
-  while (selectedNumbers.length < 6 && availableNumbers.length > 0) {
-    const randomIndex = Math.floor(Math.random() * availableNumbers.length);
-    selectedNumbers.push(availableNumbers.splice(randomIndex, 1)[0]);
+
+  while (selectedNumbers.length < 6 && candidates.length > 0) {
+    const picked = pickWeightedNumber(candidates, realStatisticalWeights);
+    selectedNumbers.push(picked);
+    candidates = candidates.filter(n => n !== picked);
   }
-  
+
   return selectedNumbers.sort((a, b) => a - b);
 }
 

@@ -39,19 +39,39 @@ const renderApp = () => {
 }
 
 describe('App Integration', () => {
-  it('renders main view by default', () => {
+  it('renders generate view by default', () => {
     renderApp()
-    
-    expect(screen.getByText('번호 생성')).toBeInTheDocument()
-    expect(screen.getByText('히스토리')).toBeInTheDocument()
+
+    expect(screen.getByTestId('generate-view')).toBeInTheDocument()
+    expect(screen.getByText('Generate View')).toBeInTheDocument()
+  })
+
+  it('navigates back to main view from generate view', async () => {
+    const user = userEvent.setup()
+    renderApp()
+
+    expect(screen.getByTestId('generate-view')).toBeInTheDocument()
+
+    await user.click(screen.getByText('Back'))
+
+    await waitFor(() => {
+      expect(screen.getByText('번호 생성')).toBeInTheDocument()
+      expect(screen.getByText('히스토리')).toBeInTheDocument()
+    })
   })
 
   it('navigates to generate view when generate button is clicked', async () => {
     const user = userEvent.setup()
     renderApp()
-    
+
+    // main 화면으로 이동 후 다시 generate로 진입
+    await user.click(screen.getByText('Back'))
+    await waitFor(() => {
+      expect(screen.getByText('번호 생성')).toBeInTheDocument()
+    })
+
     await user.click(screen.getByText('번호 생성'))
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('generate-view')).toBeInTheDocument()
     })
@@ -60,47 +80,40 @@ describe('App Integration', () => {
   it('navigates to history view when history button is clicked', async () => {
     const user = userEvent.setup()
     renderApp()
-    
-    await user.click(screen.getByText('히스토리'))
-    
-    await waitFor(() => {
-      expect(screen.getByTestId('history-view')).toBeInTheDocument()
-    })
-  })
 
-  it('navigates back to main view from generate view', async () => {
-    const user = userEvent.setup()
-    renderApp()
-    
-    // Navigate to generate view
-    await user.click(screen.getByText('번호 생성'))
-    await waitFor(() => {
-      expect(screen.getByTestId('generate-view')).toBeInTheDocument()
-    })
-    
-    // Navigate back
     await user.click(screen.getByText('Back'))
     await waitFor(() => {
-      expect(screen.getByText('번호 생성')).toBeInTheDocument()
       expect(screen.getByText('히스토리')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByText('히스토리'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('history-view')).toBeInTheDocument()
     })
   })
 
   it('opens and closes settings modal', async () => {
     const user = userEvent.setup()
     renderApp()
-    
+
+    // 설정 버튼은 main 화면에서만 노출됨
+    await user.click(screen.getByText('Back'))
+    await waitFor(() => {
+      expect(screen.getByLabelText('설정')).toBeInTheDocument()
+    })
+
     // Open settings
     const settingsButton = screen.getByLabelText('설정')
     await user.click(settingsButton)
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('settings-modal')).toBeInTheDocument()
     })
-    
+
     // Close settings
     await user.click(screen.getByText('Close'))
-    
+
     await waitFor(() => {
       expect(screen.queryByTestId('settings-modal')).not.toBeInTheDocument()
     })
@@ -108,14 +121,14 @@ describe('App Integration', () => {
 
   it('displays dark mode toggle', () => {
     renderApp()
-    
+
     // Dark mode toggle should be present
-    expect(document.querySelector('[aria-label="다크 모드 토글"]')).toBeInTheDocument()
+    expect(document.querySelector('[aria-label="다크모드 토글"]')).toBeInTheDocument()
   })
 
   it('shows toast container', () => {
     renderApp()
-    
+
     // Toast container should be in DOM (even if empty)
     expect(document.querySelector('.toast-container') || document.body).toBeInTheDocument()
   })
@@ -128,14 +141,20 @@ describe('App Integration', () => {
   it('handles keyboard navigation', async () => {
     const user = userEvent.setup()
     renderApp()
-    
+
+    // 설정 버튼은 main 화면에서만 노출되므로 먼저 이동
+    await user.click(screen.getByText('Back'))
+    await waitFor(() => {
+      expect(screen.getByLabelText('설정')).toBeInTheDocument()
+    })
+
     // Tab through interactive elements
     await user.tab()
-    expect(document.activeElement).toHaveAttribute('aria-label', '설정')
-    
+    expect(document.activeElement).toHaveAttribute('aria-label', '다크모드 토글')
+
     await user.tab()
-    expect(document.activeElement).toHaveAttribute('aria-label', '다크 모드 토글')
-    
+    expect(document.activeElement).toHaveAttribute('aria-label', '설정')
+
     await user.tab()
     expect(document.activeElement).toHaveAttribute('aria-label', '로또 번호 생성하기')
   })
