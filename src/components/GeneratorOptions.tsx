@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { GeneratorOptionsProps } from '../types/lotto';
 import NumberBall from './NumberBall';
 
@@ -37,20 +37,46 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
     });
   };
 
-  const handleSumRangeChange = (type: 'min' | 'max', value: string) => {
-    const numValue = parseInt(value) || 0;
-    const newSumRange = { ...options.sumRange };
+  const SUM_MIN = 21;
+  const SUM_MAX = 255;
+
+  // 편집 중 임시 문자열 값 (blur/Enter 시점에만 options에 반영)
+  const [sumMinText, setSumMinText] = useState(String(options.sumRange?.min ?? SUM_MIN));
+  const [sumMaxText, setSumMaxText] = useState(String(options.sumRange?.max ?? SUM_MAX));
+
+  // 외부에서 sumRange가 바뀐 경우(초기화 등)에만 편집 텍스트를 동기화
+  useEffect(() => {
+    setSumMinText(String(options.sumRange?.min ?? SUM_MIN));
+    setSumMaxText(String(options.sumRange?.max ?? SUM_MAX));
+  }, [options.sumRange?.min, options.sumRange?.max]);
+
+  const handleSumTextChange = (type: 'min' | 'max', value: string) => {
+    const digitsOnly = value.replace(/[^0-9]/g, '');
+    if (type === 'min') setSumMinText(digitsOnly);
+    else setSumMaxText(digitsOnly);
+  };
+
+  const commitSumRange = (type: 'min' | 'max') => {
+    const currentMin = options.sumRange?.min ?? SUM_MIN;
+    const currentMax = options.sumRange?.max ?? SUM_MAX;
+    let newMin = currentMin;
+    let newMax = currentMax;
+
     if (type === 'min') {
-      newSumRange.min = Math.max(21, Math.min(numValue, newSumRange?.max || 255));
+      const parsed = parseInt(sumMinText, 10);
+      newMin = Number.isNaN(parsed) ? SUM_MIN : Math.max(SUM_MIN, Math.min(parsed, SUM_MAX));
+      newMax = Math.max(newMax, newMin);
     } else {
-      newSumRange.max = Math.min(255, Math.max(numValue, newSumRange?.min || 21));
+      const parsed = parseInt(sumMaxText, 10);
+      newMax = Number.isNaN(parsed) ? SUM_MAX : Math.max(SUM_MIN, Math.min(parsed, SUM_MAX));
+      newMin = Math.min(newMin, newMax);
     }
+
+    setSumMinText(String(newMin));
+    setSumMaxText(String(newMax));
     onOptionsChange({
       ...options,
-      sumRange: {
-        min: newSumRange.min || 21,
-        max: newSumRange.max || 255
-      }
+      sumRange: { min: newMin, max: newMax }
     });
   };
 
@@ -144,22 +170,28 @@ const GeneratorOptions: React.FC<GeneratorOptionsProps> = ({
           <span className="text-sm text-gray-700 dark:text-gray-200">합계 범위</span>
           <div className="flex items-center gap-1.5">
             <input
-              type="number"
-              min={21}
-              max={255}
-              value={options.sumRange?.min || 21}
-              onChange={e => handleSumRangeChange('min', e.target.value)}
-              className="w-14 h-7 text-center text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              aria-label="합계 최소값"
+              value={sumMinText}
+              onChange={e => handleSumTextChange('min', e.target.value)}
+              onBlur={() => commitSumRange('min')}
+              onKeyDown={e => { if (e.key === 'Enter') { e.currentTarget.blur(); } }}
+              className="w-14 h-8 text-center text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
               style={{ fontSize: '14px' }}
             />
             <span className="text-gray-400 text-xs">~</span>
             <input
-              type="number"
-              min={21}
-              max={255}
-              value={options.sumRange?.max || 255}
-              onChange={e => handleSumRangeChange('max', e.target.value)}
-              className="w-14 h-7 text-center text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              aria-label="합계 최대값"
+              value={sumMaxText}
+              onChange={e => handleSumTextChange('max', e.target.value)}
+              onBlur={() => commitSumRange('max')}
+              onKeyDown={e => { if (e.key === 'Enter') { e.currentTarget.blur(); } }}
+              className="w-14 h-8 text-center text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
               style={{ fontSize: '14px' }}
             />
           </div>

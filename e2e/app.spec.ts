@@ -85,6 +85,40 @@ test.describe('로또 번호 생성기 E2E 테스트', () => {
     await expect(page.getByText('홀짝 균형')).toBeVisible();
   });
 
+  test('합계 범위 입력 - 데스크톱에서 직접 타이핑으로 값 변경', async ({ page }) => {
+    await page.getByRole('button', { name: '고급 옵션' }).click();
+
+    const minInput = page.getByLabel('합계 최소값');
+    const maxInput = page.getByLabel('합계 최대값');
+
+    await minInput.click();
+    await minInput.press('Control+A');
+    await minInput.fill('50');
+    await minInput.blur();
+    await expect(minInput).toHaveValue('50');
+
+    await maxInput.click();
+    await maxInput.press('Control+A');
+    await maxInput.fill('200');
+    await maxInput.blur();
+    await expect(maxInput).toHaveValue('200');
+  });
+
+  test('합계 범위 입력 - 모바일 뷰포트(390px)에서 키보드 입력으로 값 변경', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole('button', { name: '고급 옵션' }).click();
+
+    const minInput = page.getByLabel('합계 최소값');
+    await expect(minInput).toBeVisible();
+    await expect(minInput).toBeEditable();
+
+    await minInput.click();
+    await minInput.press('Control+A');
+    await minInput.pressSequentially('26');
+    await minInput.blur();
+    await expect(minInput).toHaveValue('26');
+  });
+
   test('메인 화면 이동 후 히스토리 페이지 네비게이션', async ({ page }) => {
     // 뒤로가기로 메인 화면 진입
     await page.getByRole('button', { name: '뒤로가기' }).click();
